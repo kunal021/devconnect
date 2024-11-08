@@ -1,19 +1,25 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   login,
   signup,
   googleSignin,
   getUser,
-} = require("../controllers/auth.controller.js");
-const validateSchema = require("../middlewares/validateSchema.middleware.js");
-const { signupSchema, loginSchema } = require("../utils/validation.js");
-const authValidation = require("../middlewares/authValidation.middleware.js");
+  logout,
+  refreshAccessToken,
+  googleCallback,
+} from "../controllers/auth.controller.js";
+import validateSchema from "../middlewares/validateSchema.middleware.js";
+import { signupSchema, loginSchema } from "../utils/validation.js";
+import authValidation from "../middlewares/authValidation.middleware.js";
 
 const router = express.Router();
 
 router.post("/login", validateSchema(loginSchema), login);
 router.post("/signup", validateSchema(signupSchema), signup);
-router.post("/google-signin", googleSignin);
+router.post("/logout", authValidation, logout);
+router.post("/google", googleSignin);
+router.post("/google/callback", googleCallback);
+router.get("/refresh", authValidation, refreshAccessToken);
 router.get("/profile", authValidation, getUser);
 
-module.exports = router;
+export default router;

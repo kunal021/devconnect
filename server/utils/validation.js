@@ -1,6 +1,6 @@
-const zod = require("zod");
+import zod from "zod";
 
-const signupSchema = zod.object({
+export const signupSchema = zod.object({
   firstName: zod
     .string({ required_error: "First Name is required" })
     .min(3, "First Name must be atleast 3 characters")
@@ -40,13 +40,15 @@ const signupSchema = zod.object({
     .optional(),
 });
 
-const loginSchema = zod.object({
+export const loginSchema = zod.object({
   loginIdentifier: zod
     .string({ required_error: "This field is required" })
     .min(1, "This field is required")
     .refine(
       (value) =>
-        value.includes("@") ? zod.string().email().check(value) : true,
+        value.includes("@")
+          ? zod.string().email().safeParse(value).success
+          : true,
       {
         message: "Invalid email format",
         path: ["loginIdentifier"],
@@ -57,5 +59,3 @@ const loginSchema = zod.object({
     .min(8, "Password must be atleast 8 characters")
     .max(56, "Password must be less than 56 characters"),
 });
-
-module.exports = { signupSchema, loginSchema };

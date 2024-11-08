@@ -1,30 +1,34 @@
-const User = require("../schemas/user.schema.js");
-const jwt = require("jsonwebtoken");
+import User from "../schemas/user.schema.js";
+import jwt from "jsonwebtoken";
 
 const authValidation = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const token =
+      req.cookies?.accessToken ||
+      req.headers?.authorization?.replace("Bearer ", "");
+
+    // console.log(token);
 
     if (!token) {
-      throw new Error("Unauthorized");
+      throw new Error("Unauthorized request");
     }
 
-    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     const { _id } = decodedToken;
 
-    const user = await User.findById(_id);
+    const user = await User.findById(_id).select("-password -refreshToken");
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("Invalid access token");
     }
 
     req.user = user;
 
     next();
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    return res.status(401).json({ error: error.message });
   }
 };
 
-module.exports = authValidation;
+export default authValidation;

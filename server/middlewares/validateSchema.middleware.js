@@ -1,4 +1,4 @@
-const zod = require("zod");
+import zod from "zod";
 
 const validateSchema = (schema) => (req, res, next) => {
   try {
@@ -33,4 +33,4 @@ const validateSchema = (schema) => (req, res, next) => {
   }
 };
 
-module.exports = validateSchema;
+export default validateSchema;

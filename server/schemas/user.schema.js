@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,8 +31,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: 8,
       maxlength: 56,
+      sparse: true,
     },
-    firebaseUid: {
+    refreshToken: {
+      type: String,
+    },
+    providerId: {
       type: String,
       unique: true,
       sparse: true, // Allows `firebaseUid` to be null for non-Firebase users
@@ -80,14 +84,32 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-userSchema.methods.validatePassword = function (hashedPassword) {
-  return bcrypt.compare(hashedPassword, this.password);
+userSchema.methods.validatePassword = function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.createToken = function () {
-  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+userSchema.methods.createRefreshToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_LIFE,
+  });
+};
+
+userSchema.methods.createAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      userName: this.userName,
+      firstName: this.firstName,
+      lastName: this.lastName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_LIFE,
+    }
+  );
 };
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+export default User;

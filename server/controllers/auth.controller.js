@@ -1,12 +1,36 @@
-const User = require("../schemas/user.schema.js");
-const admin = require("firebase-admin");
+import User from "../schemas/user.schema.js";
+import admin from "firebase-admin";
+import jwt from "jsonwebtoken";
+import passport from "../config/passport.js";
+const generateAccessAndRefreshToken = async (userId) => {
+  const user = await User.findById(userId);
 
-const login = async (req, res) => {
+  const accessToken = user.createAccessToken();
+
+  const refreshToken = user.createRefreshToken();
+
+  // console.log("refreshToken", refreshToken);
+
+  user.refreshToken = refreshToken;
+
+  await user.save({
+    validateBeforeSave: false,
+  });
+
+  return { accessToken, refreshToken };
+};
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+};
+
+export const login = async (req, res) => {
   try {
     const { loginIdentifier, password } = req.body;
 
     if (!loginIdentifier || !password) {
-      return res.status(400).json({ message: "Invalid Credentials" });
+      throw new Error("All fields are required");
     }
 
     const user = await User.findOne({
@@ -23,19 +47,30 @@ const login = async (req, res) => {
       throw new Error("Invalid Credentials");
     }
 
-    const token = user.createToken();
+    const loogedInUser = await User.findById(user._id).select(
+      "-password -refreshToken -__v"
+    );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-    });
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
-    res.status(200).json({ message: "User authenticated" });
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .json({
+        message: "User authenticated successfully",
+        user: loogedInUser,
+        accessToken,
+        refreshToken,
+      });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-const signup = async (req, res) => {
+export const signup = async (req, res) => {
   try {
     const {
       firstName,
@@ -50,10 +85,10 @@ const signup = async (req, res) => {
       skills,
     } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
 
     if (existingUser) {
-      throw new Error("Invalid Credentials");
+      return res.status(400).json({ error: "User Already Exists" });
     }
 
     const newUser = await User.create({
@@ -69,41 +104,157 @@ const signup = async (req, res) => {
       skills,
     });
 
-    res.status(200).json({ message: "User created" });
+    return res.status(200).json({ message: "User created successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-const googleSignin = async (req, res) => {
-  const { token } = req.body;
+export const logout = async (req, res) => {
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    const { uid, email, name, picture } = decodedToken;
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $unset: { refreshToken: 1 },
+      },
+      { new: true }
+    );
 
-    let user = await User.findOne({ firebaseUid: uid });
+    return res
+      .status(200)
+      .clearCookie("refreshToken", cookieOptions)
+      .clearCookie("accessToken", cookieOptions)
+      .json({ message: "User logged out successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+// export const googleSignin = async (req, res) => {
+//   const { token } = req.body;
+//   try {
+//     const decodedToken = await admin.auth().verifyIdToken(token);
+//     const { uid, email, name, picture } = decodedToken;
+
+//     let user = await User.findOne({ firebaseUid: uid });
+
+//     if (!user) {
+//       user = await User.create({
+//         firebaseUid: uid,
+//         email,
+//         userName: `${name}${Math.floor(Math.random() * 10000)}`,
+//         profilePic: picture,
+//         provider: decodedToken.firebase.sign_in_provider,
+//       });
+//     }
+//     const token = user.createToken();
+
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//     });
+//     res.status(200).json({ message: "User authenticated" });
+//   } catch (error) {
+//     res.status(401).json({ message: "Invalid token", error: error.message });
+//   }
+// };
+
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const incomingRefreshToken =
+      req.cookies.refreshToken || req.body.refreshToken;
+
+    // console.log(incomingRefreshToken);
+
+    if (!incomingRefreshToken) {
+      throw new Error("Invalid refresh token");
+    }
+
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const { _id } = decodedToken;
+
+    const user = await User.findById(_id);
 
     if (!user) {
-      user = await User.create({
-        firebaseUid: uid,
-        email,
-        userName: `${name}${Math.floor(Math.random() * 10000)}`,
-        profilePic: picture,
-        provider: decodedToken.firebase.sign_in_provider,
-      });
+      throw new Error("Invalid refresh token");
     }
-    const token = user.createToken();
 
-    res.cookie("token", token, {
-      httpOnly: true,
-    });
-    res.status(200).json({ message: "User authenticated" });
+    if (user?.refreshToken !== incomingRefreshToken) {
+      throw new Error("Invalid refresh token");
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .json({
+        message: "Access token refreshed successfully",
+        accessToken,
+        refreshToken,
+      });
   } catch (error) {
-    res.status(401).json({ message: "Invalid token", error: error.message });
+    // console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
-const getUser = async (req, res) => {
+export const googleSignin = async (req, res) => {
+  passport.authenticate("google", { scope: ["profile", "email"] });
+};
+
+export const googleCallback = async (req, res) => {
+  passport.authenticate("google", { session: false }, async (req, res) => {
+    try {
+      const {
+        profile,
+        accessToken: googleAccessToken,
+        refreshToken: googleRefreshToken,
+      } = req.user;
+      let user = await User.findOne({
+        email: profile.emails[0].value,
+      });
+      if (!user) {
+        user = new User({
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          userName: profile.displayName,
+          email: profile.emails[0].value,
+          providerId: profile.id,
+        });
+      }
+
+      const loogedInUser = await User.findById(user._id).select(
+        "-password -refreshToken -__v"
+      );
+
+      const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+        user._id
+      );
+
+      return res
+        .status(200)
+        .cookie("refreshToken", refreshToken, cookieOptions)
+        .cookie("accessToken", accessToken, cookieOptions)
+        .json({
+          message: "User authenticated successfully",
+          user: loogedInUser,
+          accessToken,
+          refreshToken,
+        });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  });
+};
+
+export const getUser = async (req, res) => {
   try {
     const user = req.user;
 
@@ -111,10 +262,4 @@ const getUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
-module.exports = {
-  login,
-  signup,
-  googleSignin,
-  getUser,
 };
