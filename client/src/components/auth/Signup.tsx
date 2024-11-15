@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useApi } from "@/hooks/useApi";
 import { useAuth } from "@/hooks/useAuth";
 import { handleChange } from "@/lib/utils";
+import api from "@/services/axios";
 import { ApiError, SignupError, SignupProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { Github, Loader2, Mail } from "lucide-react";
@@ -11,8 +11,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export function Signup() {
-  const api = useApi();
-  const { token: authToken, loading: authLoading } = useAuth();
+  const { user: loggedInUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignupProps>({
     firstName: "",
@@ -23,10 +22,10 @@ export function Signup() {
   });
 
   useEffect(() => {
-    if (authToken?.accessToken && !authLoading) {
+    if (loggedInUser?._id && !authLoading) {
       navigate("/home");
     }
-  }, [authLoading, authToken?.accessToken, navigate]);
+  }, [authLoading, loggedInUser?._id, navigate]);
 
   const mutation = useMutation({
     mutationFn: (data: SignupProps) => {

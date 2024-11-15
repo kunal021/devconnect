@@ -5,16 +5,25 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Homepage from "./components/Home";
 import UnauthorizedPage from "./components/Unauthorized";
 import NotFoundPage from "./components/NotFoundPage";
+import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/auth/login",
-      element: <Auth />,
+      element: (
+        <PublicRoute>
+          <Auth />
+        </PublicRoute>
+      ),
     },
     {
       path: "/auth/signup",
-      element: <Auth />,
+      element: (
+        <PublicRoute>
+          <Auth />
+        </PublicRoute>
+      ),
     },
     {
       path: "/home",

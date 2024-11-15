@@ -1,5 +1,4 @@
 import User from "../schemas/user.schema.js";
-import admin from "firebase-admin";
 import jwt from "jsonwebtoken";
 import passport from "../config/passport.js";
 const generateAccessAndRefreshToken = async (userId) => {
@@ -252,14 +251,4 @@ export const googleCallback = async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
   });
-};
-
-export const getUser = async (req, res) => {
-  try {
-    const user = req.user;
-
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };

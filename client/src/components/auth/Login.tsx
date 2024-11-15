@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useApi } from "@/hooks/useApi";
 import { handleChange } from "@/lib/utils";
+import api from "@/services/axios";
 import { ApiError, LoginError, LoginProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { Github, Loader2, Mail } from "lucide-react";
@@ -11,19 +11,19 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export function Login() {
-  const api = useApi();
   const navigate = useNavigate();
-  const { login, token: authToken, loading: authLoading } = useAuth();
+  const { user: loggedInUser, loading: authLoading, login } = useAuth();
   const [formData, setFormData] = useState<LoginProps>({
     loginIdentifier: "",
     password: "",
   });
 
   useEffect(() => {
-    if (authToken?.accessToken && !authLoading) {
-      navigate("/home");
+    if (loggedInUser?._id && !authLoading) {
+      navigate("/home", { replace: true });
+      return;
     }
-  }, [authLoading, authToken?.accessToken, navigate]);
+  }, [authLoading, loggedInUser?._id, navigate]);
 
   const mutation = useMutation({
     mutationFn: (data: LoginProps) => {
@@ -32,14 +32,10 @@ export function Login() {
     onSuccess: (data) => {
       login({
         user: data.data.user,
-        token: {
-          accessToken: data.data.accessToken,
-          refreshToken: data.data.refreshToken,
-        },
       });
 
       navigate("/home");
-      console.log("Success logging in");
+      console.log("Success logging in", data);
     },
     onError: (error: ApiError<LoginError>) => {
       console.error("Error logging in:", error);

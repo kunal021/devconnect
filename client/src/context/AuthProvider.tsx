@@ -4,21 +4,10 @@ import { User } from "@/types";
 
 interface LoginType {
   user: User;
-  token: { accessToken: string | null; refreshToken: string | null };
 }
 
 interface AuthContextType {
   user: User | null;
-  token: {
-    accessToken: string | null;
-    refreshToken: string | null;
-  };
-  setToken: React.Dispatch<
-    React.SetStateAction<{
-      accessToken: string | null;
-      refreshToken: string | null;
-    }>
-  >;
   loading: boolean;
   error: string | null;
   login: (params: LoginType) => void;
@@ -29,15 +18,9 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<{
-    accessToken: string | null;
-    refreshToken: string | null;
-  }>({
-    accessToken: null,
-    refreshToken: null,
-  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  console.log(user);
 
   useEffect(() => {
     const fetchUser = () => {
@@ -45,13 +28,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const currentUser = Cookies.get("user")
           ? JSON.parse(Cookies.get("user")!)
           : null;
-        const accessToken = Cookies.get("accessToken") || null;
-        const refreshToken = Cookies.get("refreshToken") || null;
-
-        const token = { accessToken, refreshToken };
 
         setUser(currentUser);
-        setToken(token);
         setLoading(false);
       } catch (error) {
         if (error instanceof Error) {
@@ -67,27 +45,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, []);
 
-  const login = ({ user, token }: LoginType) => {
+  const login = ({ user }: LoginType) => {
     setUser(user);
-    setToken(token);
-
     Cookies.set("user", JSON.stringify(user));
-    Cookies.set("accessToken", token.accessToken!, { expires: 1 });
-    Cookies.set("refreshToken", token.refreshToken!, { expires: 15 });
   };
 
   const logout = () => {
     setUser(null);
-    setToken({ accessToken: null, refreshToken: null });
     Cookies.remove("user");
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, setToken, loading, error, login, logout }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

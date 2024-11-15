@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     providerId: {
       type: String,
       unique: true,
-      sparse: true, // Allows `firebaseUid` to be null for non-Firebase users
+      sparse: true,
     },
     age: {
       type: Number,

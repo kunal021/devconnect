@@ -3,7 +3,6 @@ import {
   login,
   signup,
   googleSignin,
-  getUser,
   logout,
   refreshAccessToken,
   googleCallback,
@@ -11,6 +10,7 @@ import {
 import validateSchema from "../middlewares/validateSchema.middleware.js";
 import { signupSchema, loginSchema } from "../utils/validation.js";
 import authValidation from "../middlewares/authValidation.middleware.js";
+import { checkUserNameExists } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -20,6 +20,6 @@ router.post("/logout", authValidation, logout);
 router.post("/google", googleSignin);
 router.post("/google/callback", googleCallback);
 router.get("/refresh", authValidation, refreshAccessToken);
-router.get("/profile", authValidation, getUser);
+router.post("/username-exists", checkUserNameExists);
 
 export default router;

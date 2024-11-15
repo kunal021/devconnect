@@ -5,10 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRefreshToken } from "@/hooks/useRefreshToken";
 
 export default function Homepage() {
-  const refresh = useRefreshToken();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -110,7 +108,6 @@ export default function Homepage() {
 
         <section className="bg-gray-100 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Button onClick={() => refresh()}>Refresh</Button>
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
               Key Features
             </h2>
