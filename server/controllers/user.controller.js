@@ -1,3 +1,4 @@
+import Connection from "../schemas/connection.schema.js";
 import User from "../schemas/user.schema.js";
 
 export const getUser = async (req, res) => {
@@ -130,9 +131,9 @@ export const checkUserExists = async (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-  const { _id } = req.user;
   try {
+    const { currentPassword, newPassword } = req.body;
+    const { _id } = req.user;
     if (!_id) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -159,6 +160,86 @@ export const changePassword = async (req, res) => {
     await user.save();
 
     return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAllConnectionRequests = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const connectionRequests = await Connection.find({
+      receiver: loggedInUser._id,
+      status: "interested",
+    }).populate("sender", [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "bio",
+      "profilePic",
+      "skills",
+    ]);
+
+    if (!connectionRequests || connectionRequests.length === 0) {
+      return res.status(404).json({ message: "No connection requests found" });
+    }
+
+    return res.status(200).json({ connectionRequests });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAllConnections = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const connections = await Connection.find({
+      $or: [
+        { sender: loggedInUser._id, status: "accepted" },
+        { receiver: loggedInUser._id, status: "accepted" },
+      ],
+    })
+      .populate("sender", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "bio",
+        "profilePic",
+        "skills",
+      ])
+      .populate("receiver", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "bio",
+        "profilePic",
+        "skills",
+      ]);
+
+    if (!connections || connections.length === 0) {
+      return res.status(404).json({ message: "No connections found" });
+    }
+
+    const data = connections.map((connection) => {
+      if (connection.sender._id.toString() === loggedInUser._id.toString()) {
+        return connection.receiver;
+      } else {
+        return connection.sender;
+      }
+    });
+
+    return res.status(200).json({ connections: data });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
