@@ -244,3 +244,46 @@ export const getAllConnections = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getFeed = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const maxLimit = limit > 50 ? 50 : limit;
+
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const connectionRequests = await Connection.find({
+      $or: [{ receiver: loggedInUser._id }, { sender: loggedInUser._id }],
+    });
+
+    const hideUsersFromFeed = new Set();
+
+    connectionRequests.forEach((connection) => {
+      hideUsersFromFeed.add(connection.sender._id.toString());
+      hideUsersFromFeed.add(connection.receiver._id.toString());
+    });
+
+    const feed = await User.find({
+      $and: [
+        { _id: { $nin: [...hideUsersFromFeed] } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    })
+      .select("-password -refreshToken -__v")
+      .skip(skip)
+      .limit(maxLimit);
+
+    if (!feed || feed.length === 0) {
+      return res.status(404).json({ message: "No feed found" });
+    }
+
+    return res.status(200).json({ data: feed });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
