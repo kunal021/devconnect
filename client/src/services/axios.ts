@@ -51,7 +51,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // Clear all auth tokens
         Cookies.remove("accessToken", { path: "/" });
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
     }

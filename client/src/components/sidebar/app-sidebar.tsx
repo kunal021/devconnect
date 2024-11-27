@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Settings } from "lucide-react";
+import { Home, Settings, User } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // This is sample data.
@@ -23,6 +23,11 @@ const data = {
       title: "Home",
       url: "/home",
       icon: Home,
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: User,
     },
     {
       title: "Settings",

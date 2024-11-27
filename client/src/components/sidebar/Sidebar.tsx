@@ -7,6 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { motion } from "framer-motion";
 
 export default function SideBar({ children }: { children: JSX.Element }) {
   return (
@@ -20,12 +21,23 @@ export default function SideBar({ children }: { children: JSX.Element }) {
           </div>
           <div className="flex justify-center items-center gap-2">
             <ThemeToggle />
-            <Button
-              variant="secondary"
-              className="bg-lime-500 hover:bg-lime-400 text-black"
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{
+                duration: 0.2,
+                type: "spring",
+                stiffness: 200,
+                damping: 10,
+              }}
             >
-              Log Out
-            </Button>
+              <Button
+                variant="secondary"
+                className="bg-lime-50 hover:bg-lime-100 border-2 border-lime-500 text-black transition-all duration-200 ease-in-out"
+              >
+                Log Out
+              </Button>
+            </motion.div>
           </div>
         </header>
         <>{children}</>

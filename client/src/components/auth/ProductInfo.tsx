@@ -50,7 +50,7 @@ export function ProductInfo() {
         <Button
           variant="secondary"
           size="lg"
-          className="bg-white text-indigo-600 hover:bg-indigo-100 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+          className="bg-white text-green-600 hover:bg-lime-100 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
         >
           Learn More
         </Button>

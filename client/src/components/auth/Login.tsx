@@ -72,7 +72,7 @@ export function Login() {
               type="email"
               autoComplete="loginIdentifier"
               required
-              className="mt-1 w-full"
+              className="mt-1 w-full bg-gray-50 text-gray-700"
               placeholder="you@example.com"
               disabled={isLoading}
               value={formData.loginIdentifier}
@@ -94,7 +94,7 @@ export function Login() {
               type="password"
               autoComplete="current-password"
               required
-              className="mt-1 w-full"
+              className="mt-1 w-full bg-gray-50 text-gray-700"
               placeholder="••••••••"
               disabled={isLoading}
               value={formData.password}
@@ -108,7 +108,7 @@ export function Login() {
         <div>
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            className="w-full bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-700 hover:to-lime-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -148,14 +148,14 @@ export function Login() {
         <div className="mt-6 flex flex-col gap-3">
           <Button
             variant="outline"
-            className="w-full hover:bg-gray-50 transition duration-300 ease-in-out"
+            className="w-full transition duration-300 ease-in-out"
             disabled={isLoading}
           >
             <Mail className="mr-2 h-4 w-4" /> Google
           </Button>
           <Button
             variant="outline"
-            className="w-full hover:bg-gray-50 transition duration-300 ease-in-out"
+            className="w-full transition duration-300 ease-in-out"
             disabled={isLoading}
           >
             <Github className="mr-2 h-4 w-4" /> GitHub

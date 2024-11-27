@@ -36,10 +36,10 @@ export default function Auth() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="hidden md:block w-1/2 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-700 p-12 text-white relative overflow-hidden"
+        className="hidden md:block w-1/2 bg-gradient-to-br from-green-600 via-lime-500 to-lime-700 p-12 text-white relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-grid-white/[0.2] bg-[size:20px_20px]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-purple-600/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-green-600/50 to-transparent" />
         <div className="relative z-10">
           <ProductInfo />
         </div>

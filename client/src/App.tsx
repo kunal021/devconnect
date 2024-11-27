@@ -9,6 +9,7 @@ import Layout from "./layout/Layout";
 import { ThemeProvider } from "./context/ThemeProvider";
 import HomePage from "./pages/HomePage";
 import SettingPage from "./pages/SettingPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   const router = createBrowserRouter([
@@ -36,6 +37,14 @@ function App() {
           element: (
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile",
+          element: (
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           ),
         },
