@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Github, Loader2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ErrorDisplay from "../error/ErrorDisplay";
 
 export function Login() {
   const navigate = useNavigate();
@@ -124,12 +125,7 @@ export function Login() {
       </form>
 
       <div className="flex justify-center items-center">
-        {isError && (
-          <p style={{ color: "red" }}>
-            Error:{" "}
-            {error.response?.data.error || "An unexpected error occurred"}
-          </p>
-        )}
+        <ErrorDisplay isError={isError} error={error} />
         {isSuccess && <p style={{ color: "green" }}>Login successful!</p>}
       </div>
 

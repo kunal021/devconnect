@@ -48,7 +48,6 @@ export const updateUser = async (req, res) => {
       firstName,
       lastName,
       userName,
-      email,
       age,
       gender,
       location,
@@ -60,11 +59,16 @@ export const updateUser = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
+    const user = await User.findOne({ userName });
+
+    if (user._id.toString() !== _id.toString()) {
+      return res.status(404).json({ message: "UserName not available" });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(_id, {
       firstName,
       lastName,
       userName,
-      email,
       age,
       gender,
       location,
@@ -106,10 +110,10 @@ export const checkUserNameExists = async (req, res) => {
     const user = await User.findOne({ userName });
 
     if (!user) {
-      return res.status(404).json({ message: "UserName not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ message: "UserName already exists" });
+    return res.status(200).json({ message: "UserName not available" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -152,7 +156,7 @@ export const changePassword = async (req, res) => {
     const isPasswordValid = await user.validatePassword(currentPassword);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid password" });
+      return res.status(400).json({ message: "Invalid current password" });
     }
 
     user.password = newPassword;

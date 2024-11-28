@@ -3,21 +3,13 @@ import api from "@/services/axios";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface UserData {
-  bio: string;
-  createdAt: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  profilePic: string;
-  skills: string[];
-  updatedAt: string;
-  userName: string;
-}
+import { useNavigate } from "react-router-dom";
+import { User } from "@/types";
+import ChangePassword from "@/components/profile/ChangePassword";
 
 function ProfilePage() {
-  const { isPending, isError, data, error } = useQuery<UserData>({
+  const navigate = useNavigate();
+  const { isPending, isError, data, error } = useQuery<User>({
     queryKey: ["userData"],
     queryFn: async () => {
       const response = await api.get("/api/v1/user/profile");
@@ -64,23 +56,6 @@ function ProfilePage() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
               Profile
             </h1>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{
-                duration: 0.2,
-                type: "spring",
-                stiffness: 200,
-                damping: 10,
-              }}
-            >
-              <Button
-                variant="secondary"
-                className="text-base py-2 px-8 bg-lime-50 hover:bg-lime-100 border-2 border-lime-500 text-black transition-all duration-200 ease-in-out"
-              >
-                Edit
-              </Button>
-            </motion.div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8">
@@ -91,6 +66,7 @@ function ProfilePage() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
+
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                 {data.firstName} {data.lastName}
@@ -104,6 +80,41 @@ function ProfilePage() {
             </div>
           </div>
 
+          <div className="flex max-sm:flex-col justify-between items-center gap-4 mt-8 w-full">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{
+                duration: 0.2,
+                type: "spring",
+                stiffness: 200,
+                damping: 10,
+              }}
+            >
+              <Button
+                onClick={() => {
+                  navigate("/profile/edit", { state: { userId: data?._id } });
+                }}
+                variant="secondary"
+                className="text-base py-2 px-8 bg-lime-50 hover:bg-lime-100 border-2 border-lime-500 text-black transition-all duration-200 ease-in-out"
+              >
+                Edit Profile
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{
+                duration: 0.2,
+                type: "spring",
+                stiffness: 200,
+                damping: 10,
+              }}
+            >
+              <ChangePassword />
+            </motion.div>
+          </div>
+
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
             <InfoCard title="Email" value={data.email} />
             <InfoCard
@@ -114,10 +125,18 @@ function ProfilePage() {
               title="Last Updated"
               value={new Date(data.updatedAt).toLocaleDateString()}
             />
+            <InfoCard title="Age" value={data.age || "Age Not Provided"} />
+            <InfoCard
+              title="Location"
+              value={data.location || "Location Not Provided"}
+            />
             <InfoCard
               title="Skills"
-              value={data.skills.join(", ") || "No skills listed"}
+              value={data.skills!.join(", ") || "No skills listed"}
             />
+            <div className="sm:col-span-2">
+              <InfoCard title="Bio" value={data.bio || "Bio Not Provided"} />
+            </div>
           </div>
         </div>
       </motion.div>
@@ -125,7 +144,7 @@ function ProfilePage() {
   );
 }
 
-function InfoCard({ title, value }: { title: string; value: string }) {
+function InfoCard({ title, value }: { title: string; value: string | number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

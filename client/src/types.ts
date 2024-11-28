@@ -5,11 +5,23 @@ export interface ApiError<T> extends AxiosError {
 }
 
 export interface SignupError {
-  error: string;
+  error?: string;
+  message?: string;
 }
 
 export interface LoginError {
-  error: string;
+  error?: string;
+  message?: string;
+}
+
+export interface UserUpdateError {
+  error?: string;
+  message?: string;
+}
+
+export interface PasswordUpdateError {
+  error?: string;
+  message?: string;
 }
 
 export interface User {
@@ -18,15 +30,27 @@ export interface User {
   lastName?: string;
   userName: string;
   email: string;
-  firebaseUid?: string;
+  providerId?: string;
   age?: number;
   gender?: string;
   location?: string;
   bio?: string;
   profilePic?: string;
   skills?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UpdateUser {
+  firstName: string;
+  lastName?: string;
+  userName: string;
+  age?: number;
+  gender?: string;
+  location?: string;
+  bio?: string;
+  profilePic?: string;
+  skills?: string[];
 }
 
 export interface SignupProps {

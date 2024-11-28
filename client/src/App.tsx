@@ -10,6 +10,7 @@ import { ThemeProvider } from "./context/ThemeProvider";
 import HomePage from "./pages/HomePage";
 import SettingPage from "./pages/SettingPage";
 import ProfilePage from "./pages/ProfilePage";
+import EditProfile from "./components/profile/EditProfile";
 
 function App() {
   const router = createBrowserRouter([
@@ -45,6 +46,14 @@ function App() {
           element: (
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile/edit",
+          element: (
+            <ProtectedRoute>
+              <EditProfile />
             </ProtectedRoute>
           ),
         },

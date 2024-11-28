@@ -12,17 +12,24 @@ import {
   getUserById,
   updateUser,
 } from "../controllers/user.controller.js";
+import { updateUserSchema } from "../utils/validation.js";
+import validateSchema from "../middlewares/validateSchema.middleware.js";
 
 const router = express.Router();
 
 router.get("/profile", authValidation, getUser);
 router.get("/get/:userId", getUserById);
 router.get("/getall", getAllUsers);
-router.patch("/update", authValidation, updateUser);
+router.patch(
+  "/update",
+  authValidation,
+  validateSchema(updateUserSchema),
+  updateUser
+);
 router.delete("/delete", authValidation, deleteUser);
 router.post("/username-exists", authValidation, checkUserNameExists);
 router.post("/user-exists", authValidation, checkUserExists);
-router.post("/change-password", authValidation, changePassword);
+router.patch("/change-password", authValidation, changePassword);
 router.get(
   "/all-connection-requests",
   authValidation,
