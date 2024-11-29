@@ -20,8 +20,9 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const cookieOptions = {
-  httpOnly: true,
-  secure: true,
+  httpOnly: true, // Ensures cookies are not accessible via JavaScript
+  secure: process.env.NODE_ENV === "production", // Set `true` in production to use HTTPS
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // For cross-site cookies in production
 };
 
 export const login = async (req, res) => {
