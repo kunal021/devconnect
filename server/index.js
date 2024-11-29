@@ -12,16 +12,10 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(
-  cors(
-    {
-      origin: "http://localhost:5173",
-      credentials: true,
-    },
-    {
-      origin: "https://devconnectt.pages.dev",
-      credentials: true,
-    }
-  )
+  cors({
+    origin: ["http://localhost:5173", "https://devconnectt.pages.dev"],
+    credentials: true,
+  })
 );
 app.use(cookieParser());
 
