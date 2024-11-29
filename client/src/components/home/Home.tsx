@@ -1,8 +1,10 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect } from "react";
 import { Code, MessageCircle, Terminal, Network } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const controls = useAnimation();
 
   useEffect(() => {
@@ -68,6 +70,7 @@ const Home = () => {
         </motion.p>
 
         <motion.button
+          onClick={() => navigate("/auth/signup")}
           className="px-8 py-4 bg-lime-500 text-white rounded-full font-semibold text-lg shadow-lg hover:bg-lime-600 transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
