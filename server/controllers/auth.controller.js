@@ -82,6 +82,7 @@ export const signup = async (req, res) => {
       location,
       bio,
       skills,
+      profession,
     } = req.body;
 
     const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
@@ -101,6 +102,7 @@ export const signup = async (req, res) => {
       location,
       bio,
       skills,
+      profession,
     });
 
     return res.status(200).json({ message: "User created successfully" });

@@ -180,6 +180,7 @@ export const getAllConnectionRequests = async (req, res) => {
       receiver: loggedInUser._id,
       status: "interested",
     }).populate("sender", [
+      "_id",
       "firstName",
       "lastName",
       "age",
@@ -187,6 +188,7 @@ export const getAllConnectionRequests = async (req, res) => {
       "bio",
       "profilePic",
       "skills",
+      "proffession",
     ]);
 
     if (!connectionRequests || connectionRequests.length === 0) {
@@ -213,22 +215,28 @@ export const getAllConnections = async (req, res) => {
       ],
     })
       .populate("sender", [
+        "_id",
         "firstName",
         "lastName",
         "age",
         "gender",
         "bio",
         "profilePic",
+        "coverPic",
         "skills",
+        "proffession",
       ])
       .populate("receiver", [
+        "_id",
         "firstName",
         "lastName",
         "age",
         "gender",
         "bio",
         "profilePic",
+        "coverPic",
         "skills",
+        "proffession",
       ]);
 
     if (!connections || connections.length === 0) {

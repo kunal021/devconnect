@@ -60,9 +60,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
     },
+    coverPic: {
+      type: String,
+      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    },
     skills: {
       type: [String],
       max: 10,
+    },
+    proffession: {
+      type: String,
     },
   },
   {

@@ -8,6 +8,7 @@ import {
   getAllConnectionRequests,
   getAllConnections,
   getAllUsers,
+  getFeed,
   getUser,
   getUserById,
   updateUser,
@@ -36,5 +37,6 @@ router.get(
   getAllConnectionRequests
 );
 router.get("/all-connections", authValidation, getAllConnections);
+router.get("/feed", authValidation, getFeed);
 
 export default router;

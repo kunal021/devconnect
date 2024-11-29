@@ -1,14 +1,16 @@
 import GetProfile from "@/components/profile/GetProfile";
-import StatusHandler from "@/components/error/SatausHandler";
 import api from "@/services/axios";
 import { User } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import StatusHandler from "../error/SatausHandler";
 
-function ProfilePage() {
+function GetUserProfile() {
+  const { userId } = useParams();
   const { isPending, isError, data, error } = useQuery<User>({
-    queryKey: ["userData"],
+    queryKey: ["userData", userId],
     queryFn: async () => {
-      const response = await api.get("/api/v1/user/profile");
+      const response = await api.get(`/api/v1/user/get/${userId}`);
       return response.data.user;
     },
   });
@@ -28,4 +30,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+export default GetUserProfile;

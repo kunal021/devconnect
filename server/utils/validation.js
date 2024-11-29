@@ -38,6 +38,7 @@ export const signupSchema = zod.object({
     .array(zod.string())
     .max(10, "Skills must be less than 10")
     .optional(),
+  profession: zod.string().optional(),
 });
 
 export const loginSchema = zod.object({

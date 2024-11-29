@@ -2,8 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import Auth from "./layout/Auth";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import UnauthorizedPage from "./components/Unauthorized";
-import NotFoundPage from "./components/NotFoundPage";
 import PublicRoute from "./routes/PublicRoute";
 import Layout from "./layout/Layout";
 import { ThemeProvider } from "./context/ThemeProvider";
@@ -11,6 +9,12 @@ import HomePage from "./pages/HomePage";
 import SettingPage from "./pages/SettingPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfile from "./components/profile/EditProfile";
+import ConnectionsPage from "./pages/ConnectionsPage";
+import GetUserProfile from "./components/user/GetUserProfile";
+import { ToastProvider } from "./context/ToastProvider";
+import UnauthorizedPage from "./components/extra/Unauthorized";
+import NotFoundPage from "./components/extra/NotFoundPage";
+import Home from "./components/home/Home";
 
 function App() {
   const router = createBrowserRouter([
@@ -34,10 +38,34 @@ function App() {
           ),
         },
         {
+          path: "/",
+          element: (
+            <PublicRoute>
+              <Home />
+            </PublicRoute>
+          ),
+        },
+        {
           path: "/home",
           element: (
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/home/:userId",
+          element: (
+            <ProtectedRoute>
+              <GetUserProfile />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/connections",
+          element: (
+            <ProtectedRoute>
+              <ConnectionsPage />
             </ProtectedRoute>
           ),
         },
@@ -77,11 +105,13 @@ function App() {
     },
   ]);
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="devconnect-ui-theme">
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ThemeProvider>
+    <ToastProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="devconnect-ui-theme">
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ThemeProvider>
+    </ToastProvider>
   );
 }
 

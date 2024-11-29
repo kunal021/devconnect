@@ -36,6 +36,7 @@ export interface User {
   location?: string;
   bio?: string;
   profilePic?: string;
+  coverPic?: string;
   skills?: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -59,6 +60,10 @@ export interface SignupProps {
   userName: string;
   email: string;
   password: string;
+  age: number;
+  gender: string;
+  location: string;
+  profession: string;
 }
 
 export interface LoginProps {
