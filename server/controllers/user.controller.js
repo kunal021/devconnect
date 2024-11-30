@@ -295,7 +295,7 @@ export const getAllConnections = async (req, res, next) => {
   }
 };
 
-export const getFeed = async (req, res) => {
+export const getFeed = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
