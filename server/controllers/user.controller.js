@@ -1,47 +1,60 @@
+import mongoose from "mongoose";
 import Connection from "../schemas/connection.schema.js";
 import User from "../schemas/user.schema.js";
 
-export const getUser = async (req, res) => {
+export const getUser = async (req, res, next) => {
   try {
     const user = req.user;
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ success: true, user });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find().select("-password -refreshToken -__v");
     if (!users) {
-      return res.status(404).json({ message: "No users found" });
+      throw { status: 404, message: "No users found" };
     }
 
-    return res.status(200).json({ users });
+    if (!users.length) {
+      return res.status(200).json({ users: [] });
+    }
+
+    return res.status(200).json({ success: true, users });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
+
+    if (!userId || !mongoose.isValidObjectId(userId)) {
+      throw { status: 400, message: "Invalid User ID" };
+    }
+
     const user = await User.findById(userId).select(
       "-password -refreshToken -__v"
     );
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw { status: 404, message: "User not found" };
     }
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ success: true, user });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
   try {
     const { _id } = req.user;
     const {
@@ -56,99 +69,122 @@ export const updateUser = async (req, res) => {
     } = req.body;
 
     if (!_id) {
-      return res.status(401).json({ error: "Unauthorized" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
     const user = await User.findOne({ userName });
 
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
     if (user._id.toString() !== _id.toString()) {
-      return res.status(404).json({ message: "UserName not available" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
-    const updatedUser = await User.findByIdAndUpdate(_id, {
-      firstName,
-      lastName,
-      userName,
-      age,
-      gender,
-      location,
-      bio,
-      skills,
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        firstName,
+        lastName,
+        userName,
+        age,
+        gender,
+        location,
+        bio,
+        skills,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      updatedUser,
     });
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
   try {
     const { _id } = req.user;
 
     if (!_id) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const deletedUser = await User.findByIdAndDelete(_id);
-
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
-    return res.status(200).json({ message: "User deleted successfully" });
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    if (user._id.toString() !== _id.toString()) {
+      throw { status: 401, message: "Unauthorized" };
+    }
+
+    await User.findByIdAndDelete(_id);
+
+    return res
+      .status(200)
+      .json({ success: true, message: "User deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const checkUserNameExists = async (req, res) => {
+export const checkUserNameExists = async (req, res, next) => {
   try {
     const { userName } = req.body;
     const user = await User.findOne({ userName });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (user) {
+      throw { status: 404, message: "UserName not available" };
     }
 
-    return res.status(200).json({ message: "UserName not available" });
+    return res
+      .status(200)
+      .json({ success: true, message: "UserName available" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const checkUserExists = async (req, res) => {
+export const checkUserExists = async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw { status: 404, message: "User not found" };
     }
 
-    return res.status(200).json({ message: "User already exists" });
+    return res
+      .status(200)
+      .json({ success: true, message: "User already exists" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const changePassword = async (req, res) => {
+export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const { _id } = req.user;
     if (!_id) {
-      return res.status(401).json({ error: "Unauthorized" });
+      throw { status: 401, message: "Unauthorized" };
     }
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: "All fields are required" });
+      throw { status: 400, message: "All fields are required" };
     }
 
     if (currentPassword === newPassword) {
-      return res
-        .status(400)
-        .json({ message: "New password cannot be same as old password" });
+      throw {
+        status: 400,
+        message: "New password cannot be same as old password",
+      };
     }
 
     const user = await User.findById(_id);
@@ -156,24 +192,26 @@ export const changePassword = async (req, res) => {
     const isPasswordValid = await user.validatePassword(currentPassword);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid current password" });
+      throw { status: 404, message: "Invalid Credentials" };
     }
 
     user.password = newPassword;
 
     await user.save();
 
-    return res.status(200).json({ message: "Password changed successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getAllConnectionRequests = async (req, res) => {
+export const getAllConnectionRequests = async (req, res, next) => {
   try {
     const loggedInUser = req.user;
     if (!loggedInUser) {
-      return res.status(401).json({ message: "Unauthorized" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
     const connectionRequests = await Connection.find({
@@ -192,20 +230,20 @@ export const getAllConnectionRequests = async (req, res) => {
     ]);
 
     if (!connectionRequests || connectionRequests.length === 0) {
-      return res.status(404).json({ message: "No connection requests found" });
+      throw { status: 404, message: "No connection requests found" };
     }
 
-    return res.status(200).json({ connectionRequests });
+    return res.status(200).json({ success: true, connectionRequests });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getAllConnections = async (req, res) => {
+export const getAllConnections = async (req, res, next) => {
   try {
     const loggedInUser = req.user;
     if (!loggedInUser) {
-      return res.status(401).json({ message: "Unauthorized" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
     const connections = await Connection.find({
@@ -240,7 +278,7 @@ export const getAllConnections = async (req, res) => {
       ]);
 
     if (!connections || connections.length === 0) {
-      return res.status(404).json({ message: "No connections found" });
+      throw { status: 404, message: "No connections found" };
     }
 
     const data = connections.map((connection) => {
@@ -251,9 +289,9 @@ export const getAllConnections = async (req, res) => {
       }
     });
 
-    return res.status(200).json({ connections: data });
+    return res.status(200).json({ success: true, connections: data });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
@@ -266,7 +304,7 @@ export const getFeed = async (req, res) => {
 
     const loggedInUser = req.user;
     if (!loggedInUser) {
-      return res.status(401).json({ message: "Unauthorized" });
+      throw { status: 401, message: "Unauthorized" };
     }
 
     const connectionRequests = await Connection.find({
@@ -291,11 +329,11 @@ export const getFeed = async (req, res) => {
       .limit(maxLimit);
 
     if (!feed || feed.length === 0) {
-      return res.status(404).json({ message: "No feed found" });
+      throw { status: 404, message: "No feed found" };
     }
 
-    return res.status(200).json({ data: feed });
+    return res.status(200).json({ success: true, data: feed });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };

@@ -84,3 +84,12 @@ export const updateUserSchema = zod.object({
     .max(10, "Skills must be less than 10")
     .optional(),
 });
+
+export const postSchema = zod.object({
+  title: zod
+    .string({ required_error: "Title is required" })
+    .min(10, "Title should be more than 10 characters"),
+  content: zod
+    .string({ required_error: "Content is required" })
+    .min(10, "Content should be more than 10 characters"),
+});

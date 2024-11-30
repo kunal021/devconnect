@@ -25,12 +25,12 @@ const cookieOptions = {
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // For cross-site cookies in production
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const { loginIdentifier, password } = req.body;
 
     if (!loginIdentifier || !password) {
-      throw new Error("All fields are required");
+      throw { status: 400, message: "All fields are required" };
     }
 
     const user = await User.findOne({
@@ -38,13 +38,13 @@ export const login = async (req, res) => {
     });
 
     if (!user) {
-      throw new Error("Invalid Credentials");
+      throw { status: 404, message: "Invalid Credentials" };
     }
 
     const isPasswordValid = await user.validatePassword(password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid Credentials");
+      throw { status: 404, message: "Invalid Credentials" };
     }
 
     const loogedInUser = await User.findById(user._id).select(
@@ -60,17 +60,18 @@ export const login = async (req, res) => {
       .cookie("refreshToken", refreshToken, cookieOptions)
       .cookie("accessToken", accessToken, cookieOptions)
       .json({
+        success: true,
         message: "User authenticated successfully",
         user: loogedInUser,
         accessToken,
         refreshToken,
       });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   try {
     const {
       firstName,
@@ -89,7 +90,7 @@ export const signup = async (req, res) => {
     const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
 
     if (existingUser) {
-      return res.status(400).json({ error: "User Already Exists" });
+      throw { status: 400, message: "User already exists" };
     }
 
     const newUser = await User.create({
@@ -106,13 +107,15 @@ export const signup = async (req, res) => {
       profession,
     });
 
-    return res.status(200).json({ message: "User created successfully" });
+    return res
+      .status(201)
+      .json({ success: true, message: "User created successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const logout = async (req, res) => {
+export const logout = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(
       req.user._id,
@@ -126,9 +129,9 @@ export const logout = async (req, res) => {
       .status(200)
       .clearCookie("refreshToken", cookieOptions)
       .clearCookie("accessToken", cookieOptions)
-      .json({ message: "User logged out successfully" });
+      .json({ success: true, message: "User logged out successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
@@ -160,7 +163,7 @@ export const logout = async (req, res) => {
 //   }
 // };
 
-export const refreshAccessToken = async (req, res) => {
+export const refreshAccessToken = async (req, res, next) => {
   try {
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
@@ -168,7 +171,7 @@ export const refreshAccessToken = async (req, res) => {
     // console.log(incomingRefreshToken);
 
     if (!incomingRefreshToken) {
-      throw new Error("Invalid refresh token");
+      throw { status: 401, message: "Invalid refresh token" };
     }
 
     const decodedToken = jwt.verify(
@@ -181,11 +184,11 @@ export const refreshAccessToken = async (req, res) => {
     const user = await User.findById(_id);
 
     if (!user) {
-      throw new Error("Invalid refresh token");
+      throw { status: 401, message: "Unauthorized" };
     }
 
     if (user?.refreshToken !== incomingRefreshToken) {
-      throw new Error("Invalid refresh token");
+      throw { status: 401, message: "Invalid refresh token" };
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -197,13 +200,13 @@ export const refreshAccessToken = async (req, res) => {
       .cookie("refreshToken", refreshToken, cookieOptions)
       .cookie("accessToken", accessToken, cookieOptions)
       .json({
+        success: true,
         message: "Access token refreshed successfully",
         accessToken,
         refreshToken,
       });
   } catch (error) {
-    // console.log(error);
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
