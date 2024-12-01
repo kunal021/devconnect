@@ -150,7 +150,7 @@ export const getPostById = async (req, res, next) => {
   }
 };
 
-const getPostByUserId = async (req, res, next) => {
+export const getPostByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;
 

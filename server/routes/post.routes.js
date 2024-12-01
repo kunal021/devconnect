@@ -5,6 +5,7 @@ import {
   deletePost,
   getAllPosts,
   getPostById,
+  getPostByUserId,
   updatePost,
 } from "../controllers/post.controller.js";
 import validateSchema from "../middlewares/validateSchema.middleware.js";
@@ -22,5 +23,6 @@ router.patch(
 router.delete("/delete/:postId", authValidation, deletePost);
 router.get("/all", getAllPosts);
 router.get("/get/:postId", getPostById);
+router.get("/user-posts/:userId", getPostByUserId);
 
 export default router;
