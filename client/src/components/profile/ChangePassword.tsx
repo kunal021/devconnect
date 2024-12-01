@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/services/axios";
 import { ApiError, PasswordUpdateError } from "@/types";
 import { Loader2 } from "lucide-react";
+import ErrorDisplay from "../error/ErrorDisplay";
 
 const formVariants = {
   hidden: { opacity: 0 },
@@ -147,15 +148,7 @@ function ChangePassword() {
                 ))}
 
                 <div className="flex justify-center items-center">
-                  {isError && (
-                    <p style={{ color: "red" }}>
-                      Error:{" "}
-                      {error.response?.data.error
-                        ? error.response?.data.error
-                        : error.response?.data.message ||
-                          "An unexpected error occurred"}
-                    </p>
-                  )}
+                  {isError && <ErrorDisplay error={error} isError={isError} />}
                   {isSuccess && (
                     <p style={{ color: "green" }}>Login successful!</p>
                   )}

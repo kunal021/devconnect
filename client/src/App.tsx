@@ -15,6 +15,8 @@ import { ToastProvider } from "./context/ToastProvider";
 import UnauthorizedPage from "./components/extra/Unauthorized";
 import NotFoundPage from "./components/extra/NotFoundPage";
 import Home from "./components/home/Home";
+import PostPage from "./pages/PostPage";
+import GetPost from "./components/post/GetPost";
 
 function App() {
   const router = createBrowserRouter([
@@ -58,6 +60,22 @@ function App() {
           element: (
             <ProtectedRoute>
               <GetUserProfile />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/posts",
+          element: (
+            <ProtectedRoute>
+              <PostPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/posts/:postId",
+          element: (
+            <ProtectedRoute>
+              <GetPost />
             </ProtectedRoute>
           ),
         },

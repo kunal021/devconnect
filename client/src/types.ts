@@ -23,6 +23,10 @@ export interface PasswordUpdateError {
   error?: string;
   message?: string;
 }
+export interface PostError {
+  error?: string;
+  message?: string;
+}
 
 export interface User {
   _id?: string;
@@ -69,4 +73,18 @@ export interface SignupProps {
 export interface LoginProps {
   loginIdentifier: string;
   password: string;
+}
+
+export interface PostProps {
+  _id: string;
+  title: string;
+  content: string;
+  author: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    profilePic: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }

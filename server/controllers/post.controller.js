@@ -149,3 +149,29 @@ export const getPostById = async (req, res, next) => {
     next(error);
   }
 };
+
+const getPostByUserId = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId || !mongoose.isValidObjectId(userId)) {
+      throw { status: 400, message: "Invalid User ID" };
+    }
+
+    const posts = await Post.find({ author: userId })
+      .populate("author", ["firstName", "lastName", "profilePic", "userName"])
+      .select("-__v");
+
+    if (!posts) {
+      throw { status: 404, message: "No posts found" };
+    }
+
+    if (!posts.length) {
+      return res.status(200).json({ data: [] });
+    }
+
+    return res.status(200).json({ success: true, data: posts });
+  } catch (error) {
+    next(error);
+  }
+};

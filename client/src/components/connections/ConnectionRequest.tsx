@@ -61,6 +61,14 @@ function ConnectionRequest() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["requests"] });
+      queryClient.setQueryData(["requests"], (oldData: ConnectionRequest[]) => {
+        if (!oldData) {
+          return oldData;
+        }
+        return oldData.filter(
+          (request: ConnectionRequest) => request._id !== variables.connectionId
+        );
+      });
       const successMessage =
         variables.action === "accepted"
           ? "You have accepted the connection request."

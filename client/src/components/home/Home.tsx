@@ -1,6 +1,16 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect } from "react";
-import { Code, MessageCircle, Terminal, Network } from "lucide-react";
+import {
+  Code,
+  MessageCircle,
+  Terminal,
+  Network,
+  Share2,
+  FileText,
+  Users,
+  Globe,
+  Edit,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -34,10 +44,22 @@ const Home = () => {
       description:
         "Build your professional developer profile, showcase your skills, connect with potential mentors, teammates, and explore job opportunities in the tech industry.",
     },
+    {
+      icon: Share2,
+      title: "Tech Post Sharing",
+      description:
+        "Create and share technical blog posts, tutorials, and insights. Engage with content through comments, likes, and collaborative annotations.",
+    },
+    {
+      icon: FileText,
+      title: "Code Snippet Library",
+      description:
+        "Publish, discover, and save code snippets across various programming languages. Searchable, taggable, and easily shareable repositories.",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lime-100 to-green-200 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-lime-100 to-green-200 flex flex-col items-center justify-center p-4 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={controls}
@@ -136,25 +158,74 @@ const Home = () => {
                 style={{ stopColor: "#bbf7d0", stopOpacity: 1 }}
               />
             </linearGradient>
-            <path
-              id="connectionPath"
-              d="M100,200 Q400,100 700,200"
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="3"
-            />
+            <clipPath id="postClip">
+              <rect x="200" y="100" width="400" height="200" rx="10" />
+            </clipPath>
           </defs>
 
           <rect width="800" height="400" fill="url(#backgroundGradient)" />
 
+          {/* Post Creation Visualization */}
+          <motion.g
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            <rect
+              x="200"
+              y="100"
+              width="400"
+              height="200"
+              fill="white"
+              rx="10"
+              stroke="#10b981"
+              strokeWidth="3"
+            />
+
+            <motion.rect
+              x="220"
+              y="120"
+              width="360"
+              height="40"
+              fill="#e5e7eb"
+              rx="5"
+              initial={{ width: 0 }}
+              animate={{ width: 360 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+            />
+
+            <motion.rect
+              x="220"
+              y="170"
+              width="360"
+              height="100"
+              fill="#f3f4f6"
+              rx="5"
+              initial={{ height: 0 }}
+              animate={{ height: 100 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+            />
+          </motion.g>
+
+          {/* Floating Icons */}
           <motion.circle
             cx="150"
             cy="200"
             r="40"
             fill="#10b981"
             initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          />
+            animate={{
+              scale: [0, 1.2, 1],
+              rotate: [0, 20, -20, 0],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          >
+            <Edit className="text-white" />
+          </motion.circle>
 
           <motion.circle
             cx="650"
@@ -162,23 +233,18 @@ const Home = () => {
             r="40"
             fill="#10b981"
             initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          />
-
-          <use
-            href="#connectionPath"
-            fill="none"
-            stroke="#10b981"
-            strokeWidth="3"
+            animate={{
+              scale: [0, 1.2, 1],
+              rotate: [0, -20, 20, 0],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
           >
-            <motion.animate
-              attributeName="stroke-dashoffset"
-              from="1000"
-              to="0"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-          </use>
+            <Share2 className="text-white" />
+          </motion.circle>
 
           <text
             x="400"
@@ -187,8 +253,96 @@ const Home = () => {
             fontSize="24"
             fill="#065f46"
           >
-            Connecting Developers Globally
+            Share, Collaborate, Inspire
           </text>
+        </svg>
+      </motion.div>
+
+      {/* Post Lifecycle Visualization */}
+      <motion.div
+        className="mt-16 w-full max-w-4xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 800 300"
+          className="w-full h-auto"
+        >
+          <defs>
+            <linearGradient
+              id="postLifecycleGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                style={{ stopColor: "#ecfdf5", stopOpacity: 1 }}
+              />
+              <stop
+                offset="100%"
+                style={{ stopColor: "#d1fae5", stopOpacity: 1 }}
+              />
+            </linearGradient>
+          </defs>
+
+          <rect width="800" height="300" fill="url(#postLifecycleGradient)" />
+
+          {/* Post Lifecycle Stages */}
+          {[
+            { x: 100, icon: Edit, label: "Create" },
+            { x: 300, icon: Users, label: "Collaborate" },
+            { x: 500, icon: Globe, label: "Publish" },
+            { x: 700, icon: Share2, label: "Amplify" },
+          ].map((stage, index) => (
+            <motion.g key={stage.label}>
+              <motion.circle
+                cx={stage.x}
+                cy="150"
+                r="50"
+                fill="#10b981"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.3,
+                }}
+              />
+              <motion.text
+                x={stage.x}
+                y="150"
+                textAnchor="middle"
+                fill="white"
+                fontSize="16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.3 + 0.3,
+                }}
+              >
+                <stage.icon size={24} strokeWidth={2} />
+              </motion.text>
+              <motion.text
+                x={stage.x}
+                y="250"
+                textAnchor="middle"
+                fill="#065f46"
+                fontSize="18"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.3 + 0.6,
+                }}
+              >
+                {stage.label}
+              </motion.text>
+            </motion.g>
+          ))}
         </svg>
       </motion.div>
 
@@ -196,7 +350,7 @@ const Home = () => {
         className="mt-16 text-center text-green-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
+        transition={{ delay: 1.4, duration: 0.8 }}
       >
         © 2024 DevConnect. Empowering Developer Communities.
       </motion.footer>
