@@ -14,7 +14,7 @@ import {
 import { Label } from "../ui/label";
 import api from "@/services/axios";
 import { ApiError, PostError } from "@/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/useToast";
 import ErrorDisplay from "../error/ErrorDisplay";
 import { Loader2 } from "lucide-react";
@@ -47,6 +47,7 @@ const inputVariants = {
 
 export default function CreatePost() {
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -56,6 +57,7 @@ export default function CreatePost() {
       return await api.post("/api/v1/post/create", data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       setIsOpen(false);
       console.log("Success Updating Password");
     },
