@@ -17,6 +17,7 @@ import NotFoundPage from "./components/extra/NotFoundPage";
 import Home from "./components/home/Home";
 import PostPage from "./pages/PostPage";
 import GetPost from "./components/post/GetPost";
+import ChatPage from "./pages/ChatPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -84,6 +85,14 @@ function App() {
           element: (
             <ProtectedRoute>
               <ConnectionsPage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/chats",
+          element: (
+            <ProtectedRoute>
+              <ChatPage />
             </ProtectedRoute>
           ),
         },

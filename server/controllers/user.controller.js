@@ -17,7 +17,10 @@ export const getUser = async (req, res, next) => {
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select("-password -refreshToken -__v");
+    const { _id } = req.user;
+    const users = await User.find({ _id: { $ne: _id } }).select(
+      "-password -refreshToken -__v"
+    );
     if (!users) {
       throw { status: 404, message: "No users found" };
     }

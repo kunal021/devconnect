@@ -13,7 +13,13 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BookOpen, CircleUser, Home, UserPlus } from "lucide-react";
+import {
+  BookOpen,
+  CircleUser,
+  Home,
+  MessageCircleMore,
+  UserPlus,
+} from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // This is sample data.
@@ -33,6 +39,11 @@ const data = {
       title: "Connections",
       url: "/connections",
       icon: UserPlus,
+    },
+    {
+      title: "Chats",
+      url: "/chats",
+      icon: MessageCircleMore,
     },
     {
       title: "Profile",

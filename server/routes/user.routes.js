@@ -20,7 +20,7 @@ const router = express.Router();
 
 router.get("/profile", authValidation, getUser);
 router.get("/get/:userId", getUserById);
-router.get("/getall", getAllUsers);
+router.get("/getall", authValidation, getAllUsers);
 router.patch(
   "/update",
   authValidation,
