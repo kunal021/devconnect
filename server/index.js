@@ -46,17 +46,27 @@ connectDB()
     console.log(err);
   });
 
+const userSocketMap = {};
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.broadcast.emit("user-connected", { id: socket.id });
+  const userId = socket.handshake.query.userId;
+  if (userId) {
+    userSocketMap[userId] = socket.id;
+  }
 
-  socket.on("message", (data) => {
-    console.log(`Messagee from ${socket.id}: ${data}`);
-    socket.broadcast.emit("message", data);
-  });
+  io.emit("userConnected", Object.keys(userSocketMap));
+
+  // socket.broadcast.emit("user-connected", { id: socket.id });
+
+  // socket.on("message", (data) => {
+  //   console.log(`Messagee from ${socket.id}: ${data}`);
+  //   socket.broadcast.emit("message", data);
+  // });
 
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
+    delete userSocketMap[userId];
+    io.emit("userDisconnected", Object.keys(userSocketMap));
   });
 });

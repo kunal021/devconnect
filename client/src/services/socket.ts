@@ -1,8 +1,11 @@
 import API_URL from "@/lib/API_URL";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-const socket = io(API_URL, {
-  withCredentials: true,
-});
+const createSocket = (userId: string | undefined): Socket => {
+  return io(API_URL, {
+    withCredentials: true,
+    query: { userId },
+  });
+};
 
-export default socket;
+export default createSocket;
