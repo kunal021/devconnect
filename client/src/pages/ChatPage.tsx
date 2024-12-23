@@ -1,6 +1,8 @@
 // import socket from "@/services/socket";
 // import { useState, useEffect } from "react";
 
+import { useAuth } from "@/hooks/useAuth";
+
 // const ChatPage = () => {
 //   const [messages, setMessages] = useState([]);
 //   const [input, setInput] = useState("");
@@ -86,6 +88,9 @@
 // export default ChatPage;
 
 function ChatPage() {
+  const { onlineUsers } = useAuth();
+
+  console.log(onlineUsers);
   return <div>ChatPage</div>;
 }
 

@@ -1,8 +1,8 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { User } from "@/types";
-import createSocket from "@/services/socket";
-import { Socket } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import API_URL from "@/lib/API_URL";
 
 interface LoginType {
   user: User;
@@ -14,6 +14,8 @@ interface AuthContextType {
   error: string | null;
   login: (params: LoginType) => void;
   logout: () => void;
+  onlineUsers: string[];
+  socket: Socket | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,61 +24,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const socketRef = useRef<Socket | null>(null);
+
+  const connectSocket = useCallback(() => {
+    {
+      const userId = user?._id;
+
+      if (!userId || socketRef.current?.connected) return;
+
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+
+      const newSocket = io(API_URL, {
+        query: {
+          userId,
+        },
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+      newSocket.connect();
+
+      socketRef.current = newSocket;
+
+      newSocket.on("getOnlineUsers", (users: string[]) => {
+        setOnlineUsers(users);
+      });
+    }
+  }, [user?._id]);
+
+  const disconnectSocket = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+  }, []);
 
   const login = ({ user }: LoginType) => {
     setUser(user);
     Cookies.set("user", JSON.stringify(user));
     // connectSocket();
-    if (user && user._id) {
-      if (!socketRef.current) {
-        console.log("Creating new socket instance."); // Debug log
-        socketRef.current = createSocket(user._id);
-      }
-
-      if (socketRef.current) {
-        console.log("Connecting socket."); // Debug log
-        socketRef.current.connect();
-      } else {
-        console.error("Socket instance is undefined."); // Error log
-      }
-    } else {
-      console.error("User or user._id is undefined."); // Error log
-    }
   };
 
   const logout = () => {
-    setUser(null);
     disconnectSocket();
+    setUser(null);
     Cookies.remove("user");
-  };
-
-  // const connectSocket = () => {
-  //   if (user && user._id) {
-  //     if (!socketRef.current) {
-  //       console.log("Creating new socket instance."); // Debug log
-  //       socketRef.current = createSocket(user._id);
-  //     }
-
-  //     if (socketRef.current) {
-  //       console.log("Connecting socket."); // Debug log
-  //       socketRef.current.connect();
-  //     } else {
-  //       console.error("Socket instance is undefined."); // Error log
-  //     }
-  //   } else {
-  //     console.error("User or user._id is undefined."); // Error log
-  //   }
-  // };
-
-  const disconnectSocket = () => {
-    if (socketRef.current) {
-      console.log("Disconnecting socket."); // Debug log
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    } else {
-      console.log("Socket instance already disconnected."); // Debug log
-    }
   };
 
   useEffect(() => {
@@ -88,10 +83,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (currentUser) {
           setUser(currentUser);
-          if (socketRef.current === null) {
-            socketRef.current = createSocket(currentUser._id);
-            socketRef.current.connect();
-          }
         }
         setLoading(false);
       } catch (error) {
@@ -108,19 +99,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, []);
 
-  // useEffect(() => {
-  //   if (user && user._id) {
-  //     socket = createSocket(user?._id);
-  //     socket.connect();
-  //   }
-  //   return () => {
-  //     socket = createSocket(user?._id);
-  //     socket.disconnect();
-  //   };
-  // }, [user]);
+  useEffect(() => {
+    if (user?._id) {
+      connectSocket();
+    }
+
+    return () => {
+      disconnectSocket();
+    };
+  }, [user?._id, connectSocket, disconnectSocket]);
+
+  useEffect(() => {
+    return () => {
+      disconnectSocket();
+    };
+  }, [disconnectSocket]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        login,
+        logout,
+        onlineUsers,
+        socket: socketRef.current,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

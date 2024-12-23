@@ -55,9 +55,9 @@ function ChangePassword() {
     }) => {
       return await api.patch("/api/v1/user/change-password", data);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setIsOpen(false);
-      console.log("Success Updating Password", data);
+      console.log("Success Updating Password");
     },
     onError: (error: ApiError<PasswordUpdateError>) => {
       console.error("Error Updating Password:", error);

@@ -107,9 +107,9 @@ const EditProfile = () => {
     mutationFn: (data: UpdateUser) => {
       return api.patch(`/api/v1/user/update`, data);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       navigate("/profile");
-      console.log("Success Updating User", data);
+      console.log("Success Updating User");
     },
     onError: (error: ApiError<UserUpdateError>) => {
       console.error("Error Updating User:", error);

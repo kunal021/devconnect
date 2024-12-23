@@ -59,10 +59,10 @@ export default function CreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       setIsOpen(false);
-      console.log("Success Updating Password");
+      console.log("Success Creating Post");
     },
     onError: (error: ApiError<PostError>) => {
-      console.error("Error Updating Password:", error);
+      console.error("Error Creating Post", error);
     },
   });
 

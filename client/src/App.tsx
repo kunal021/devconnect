@@ -1,23 +1,21 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { AuthProvider } from "./context/AuthProvider";
 import Auth from "./layout/Auth";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 import Layout from "./layout/Layout";
-import { ThemeProvider } from "./context/ThemeProvider";
 import HomePage from "./pages/HomePage";
 import SettingPage from "./pages/SettingPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfile from "./components/profile/EditProfile";
 import ConnectionsPage from "./pages/ConnectionsPage";
 import GetUserProfile from "./components/user/GetUserProfile";
-import { ToastProvider } from "./context/ToastProvider";
 import UnauthorizedPage from "./components/extra/Unauthorized";
 import NotFoundPage from "./components/extra/NotFoundPage";
 import Home from "./components/home/Home";
 import PostPage from "./pages/PostPage";
 import GetPost from "./components/post/GetPost";
 import ChatPage from "./pages/ChatPage";
+import AppProviders from "./context/AppProviders";
 
 function App() {
   const router = createBrowserRouter([
@@ -132,13 +130,9 @@ function App() {
     },
   ]);
   return (
-    <ToastProvider>
-      <ThemeProvider defaultTheme="dark" storageKey="devconnect-ui-theme">
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </ThemeProvider>
-    </ToastProvider>
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>
   );
 }
 

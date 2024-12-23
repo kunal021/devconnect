@@ -1,3 +1,4 @@
+import { getReceiverSocketId } from "../index.js";
 import Message from "../schemas/message.schema.js";
 
 export const getMessages = async (req, res, next) => {
@@ -46,6 +47,11 @@ export const sendMessage = async (req, res, next) => {
 
     if (!message) {
       throw { status: 500, message: "Failed to send message" };
+    }
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
     }
 
     return res.status(201).json({ success: true, data: message });

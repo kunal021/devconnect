@@ -36,7 +36,7 @@ export function Login() {
       });
 
       navigate("/home");
-      console.log("Success logging in", data);
+      console.log("Success logging in");
     },
     onError: (error: ApiError<LoginError>) => {
       console.error("Error logging in:", error);

@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/DBConnect.js";
 import rootRoute from "./routes/root.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
+import { object } from "zod";
 
 const port = process.env.PORT || 5000;
 
@@ -46,6 +47,10 @@ connectDB()
     console.log(err);
   });
 
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}
+
 const userSocketMap = {};
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
@@ -55,18 +60,11 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
   }
 
-  io.emit("userConnected", Object.keys(userSocketMap));
-
-  // socket.broadcast.emit("user-connected", { id: socket.id });
-
-  // socket.on("message", (data) => {
-  //   console.log(`Messagee from ${socket.id}: ${data}`);
-  //   socket.broadcast.emit("message", data);
-  // });
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
     delete userSocketMap[userId];
-    io.emit("userDisconnected", Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
