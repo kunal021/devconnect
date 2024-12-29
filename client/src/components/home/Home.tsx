@@ -1,12 +1,10 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect } from "react";
 import {
-  Code,
   MessageCircle,
   Terminal,
   Network,
   Share2,
-  FileText,
   Users,
   Globe,
   Edit,
@@ -27,12 +25,6 @@ const Home = () => {
 
   const features = [
     {
-      icon: Code,
-      title: "Project Collaboration",
-      description:
-        "Connect with developers worldwide, share code repositories, collaborate on open-source projects, and get real-time feedback from a global community of programmers.",
-    },
-    {
       icon: MessageCircle,
       title: "Instant Tech Chat",
       description:
@@ -49,12 +41,6 @@ const Home = () => {
       title: "Tech Post Sharing",
       description:
         "Create and share technical blog posts, tutorials, and insights. Engage with content through comments, likes, and collaborative annotations.",
-    },
-    {
-      icon: FileText,
-      title: "Code Snippet Library",
-      description:
-        "Publish, discover, and save code snippets across various programming languages. Searchable, taggable, and easily shareable repositories.",
     },
   ];
 
