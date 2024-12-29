@@ -8,10 +8,18 @@ function ChatPage() {
 
   return (
     <main className="flex h-[calc(100vh-4rem)]">
-      <div className="flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-700">
+      <div
+        className={`flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-700 max-md:w-full ${
+          selectedUser ? "hidden md:block" : ""
+        }`}
+      >
         <ChatSidebar />
       </div>
-      <div className="scroll flex-1 overflow-y-auto">
+      <div
+        className={`scroll flex-1 overflow-y-auto ${
+          selectedUser ? "" : "hidden md:block"
+        }`}
+      >
         {selectedUser ? <ChatContainer /> : <NoChatSelected />}
       </div>
     </main>

@@ -23,14 +23,14 @@ const ChatSidebar = () => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col shrink-0">
+    <aside className="h-full w-full md:w-64 lg:w-72 border-r border-base-300 flex flex-col shrink-0">
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <UserPlus className="size-6" />
-          <span className="font-medium hidden lg:block">Connections</span>
+          <span className="font-medium block">Connections</span>
         </div>
 
-        <div className="mt-3 hidden lg:flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
               type="checkbox"
@@ -61,7 +61,7 @@ const ChatSidebar = () => {
                   }
                 `}
           >
-            <div className="relative mx-auto lg:mx-0">
+            <div className="relative mx-0">
               <img
                 src={user.profilePic || "/avatar.png"}
                 alt={user.firstName}
@@ -75,7 +75,7 @@ const ChatSidebar = () => {
               )}
             </div>
 
-            <div className="hidden lg:block text-left min-w-0">
+            <div className="block text-left min-w-0">
               <div className="font-medium truncate">
                 {user.firstName}
                 {user.lastName ? ` ${user.lastName}` : ""}

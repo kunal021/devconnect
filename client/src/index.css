@@ -89,12 +89,12 @@ body::-webkit-scrollbar {
   width: 5px;
 }
 
-body::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+/* body::-webkit-scrollbar-track {
+  background: #000000;
+} */
 
 body::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #84cc16;
   border-radius: 10px;
 }
 
@@ -106,11 +106,11 @@ body::-webkit-scrollbar-thumb {
   width: 5px;
 }
 
-.scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+/* .scroll::-webkit-scrollbar-track {
+  background: #000000;
+} */
 
 .scroll::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #84cc16;
   border-radius: 10px;
 }

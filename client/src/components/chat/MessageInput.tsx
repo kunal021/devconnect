@@ -44,7 +44,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="p-4 w-full bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="p-2 w-full bg-gray-100 dark:bg-gray-900">
       {/* {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -85,7 +85,7 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex items-center justify-center w-10 h-10 rounded-full
+            className={`flex items-center justify-center w-10 h-10 rounded-full
                      ${
                        imagePreview
                          ? "text-emerald-500 bg-emerald-100 dark:bg-emerald-900"
