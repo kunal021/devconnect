@@ -1,7 +1,6 @@
 // src/services/axios.js
 import API_URL from "@/lib/API_URL";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 const baseURL = API_URL;
 
