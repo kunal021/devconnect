@@ -6,7 +6,7 @@ import { handleChange } from "@/lib/utils";
 import api from "@/services/axios";
 import { ApiError, SignupError, SignupProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
-import { Github, Loader2, Mail } from "lucide-react";
+import { Eye, EyeOff, Github, Loader2, Mail, UserSearch } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorDisplay from "../error/ErrorDisplay";
@@ -22,13 +22,16 @@ export function Signup() {
     userName: "",
     email: "",
     password: "",
-    age: 0,
-    gender: "",
-    location: "",
-    profession: "",
+    // age: 0,
+    // gender: "",
+    // location: "",
+    // profession: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
-  // console.log(formData);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     if (loggedInUser?._id && !authLoading) {
@@ -36,7 +39,7 @@ export function Signup() {
     }
   }, [authLoading, loggedInUser?._id, navigate]);
 
-  const mutation = useMutation({
+  const signupMutation = useMutation({
     mutationFn: (data: SignupProps) => {
       return api.post(`/api/v1/auth/signup`, data);
     },
@@ -49,14 +52,45 @@ export function Signup() {
     },
   });
 
-  const { mutate, isPending: isLoading, isError, error, isSuccess } = mutation;
+  const {
+    mutate,
+    isPending: isLoading,
+    isError,
+    error,
+    isSuccess,
+  } = signupMutation;
+
+  const userNameMutation = useMutation({
+    mutationFn: (userName: string) => {
+      return api.post(`/api/v1/auth/username-exists`, {
+        userName,
+      });
+    },
+    onSuccess: () => {
+      console.log("Success checking username");
+      showToast("success", "Username available", "bottom-right", 2000);
+    },
+    onError: (error: ApiError<SignupError>) => {
+      console.error("Error checking username:", error);
+      showToast("error", "Username already exists", "bottom-right", 2000);
+    },
+  });
+
+  const {
+    mutate: checkUserName,
+    isPending: userNameLoading,
+    isSuccess: isUserNameSuccess,
+    error: userNameError,
+    isError: isUserNameError,
+  } = userNameMutation;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (formData.age <= 17) {
-      showToast("error", "Age must be greater than 17", "bottom-right", 2000);
-    }
     mutate(formData);
+  };
+
+  const handleUserNameChange = () => {
+    checkUserName(formData.userName);
   };
 
   return (
@@ -122,20 +156,36 @@ export function Signup() {
             >
               User Name
             </Label>
-            <Input
-              id="userName"
-              name="userName"
-              type="text"
-              autoComplete="username"
-              required
-              className="mt-1 w-full bg-gray-50 text-gray-700"
-              placeholder="johndoe"
-              disabled={isLoading}
-              value={formData.userName}
-              onChange={(e) =>
-                handleChange({ e, data: formData, setData: setFormData })
-              }
-            />
+            <div className="relative">
+              <Input
+                id="userName"
+                name="userName"
+                type="text"
+                autoComplete="username"
+                required
+                className="pr-10 bg-white text-gray-700"
+                placeholder="johndoe"
+                disabled={isLoading}
+                value={formData.userName}
+                onChange={(e) =>
+                  handleChange({ e, data: formData, setData: setFormData })
+                }
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                disabled={userNameLoading}
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-black hover:text-black"
+                onClick={handleUserNameChange}
+              >
+                {userNameLoading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  <UserSearch className="h-6 w-6" />
+                )}
+              </Button>
+            </div>
           </div>
           <div>
             <Label
@@ -166,22 +216,38 @@ export function Signup() {
             >
               Password
             </Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="mt-1 w-full bg-gray-50 text-gray-700"
-              placeholder="••••••••"
-              disabled={isLoading}
-              value={formData.password}
-              onChange={(e) =>
-                handleChange({ e, data: formData, setData: setFormData })
-              }
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="pr-10 bg-white text-gray-700"
+                placeholder="••••••••"
+                disabled={isLoading}
+                value={formData.password}
+                onChange={(e) =>
+                  handleChange({ e, data: formData, setData: setFormData })
+                }
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-black hover:text-black"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-6 w-6" />
+                ) : (
+                  <Eye className="h-6 w-6" />
+                )}
+              </Button>
+            </div>
           </div>
-          <div>
+          {/* <div>
             <Label
               htmlFor="age"
               className="block text-sm font-medium text-gray-700"
@@ -205,7 +271,7 @@ export function Signup() {
                 }))
               }
             />
-          </div>
+          </div> */}
           {/* <div>
             <Label
               htmlFor="gender"
@@ -229,7 +295,7 @@ export function Signup() {
               <option value="prefer-not-to-say">Prefer not to say</option>
             </Select>
           </div> */}
-          <div>
+          {/* <div>
             <Label
               htmlFor="location"
               className="block text-sm font-medium text-gray-700"
@@ -249,8 +315,8 @@ export function Signup() {
                 handleChange({ e, data: formData, setData: setFormData })
               }
             />
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <Label
               htmlFor="profession"
               className="block text-sm font-medium text-gray-700"
@@ -270,7 +336,7 @@ export function Signup() {
                 handleChange({ e, data: formData, setData: setFormData })
               }
             />
-          </div>
+          </div> */}
         </div>
 
         <div>
@@ -292,15 +358,15 @@ export function Signup() {
       </form>
 
       <div className="flex justify-center items-center">
-        {/* {isError && (
-          <p style={{ color: "red" }}>
-            Error:{" "}
-            {error.response?.data.error || "An unexpected error occurred"}
-          </p>
-        )} */}
-
         <ErrorDisplay isError={isError} error={error} />
         {isSuccess && <p style={{ color: "green" }}>Signup successful!</p>}
+      </div>
+
+      <div className="flex justify-center items-center">
+        <ErrorDisplay isError={isUserNameError} error={userNameError} />
+        {isUserNameSuccess && (
+          <p style={{ color: "green" }}>Username Available</p>
+        )}
       </div>
 
       <div>

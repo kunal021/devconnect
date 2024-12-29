@@ -113,21 +113,23 @@ function GetProfile({ data }: { data: User }) {
           </div>
         </div>
       </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto mt-5 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md overflow-hidden"
-      >
-        <div className="p-6 sm:p-8">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
-              Your Posts
-            </h1>
+      {user?._id === data._id && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto mt-5 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md overflow-hidden"
+        >
+          <div className="p-6 sm:p-8">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                Your Posts
+              </h1>
+            </div>
           </div>
-        </div>
-        {data._id && <GetUserPosts userId={data._id} />}
-      </motion.div>
+          {data._id && <GetUserPosts userId={data._id} />}
+        </motion.div>
+      )}
     </div>
   );
 }

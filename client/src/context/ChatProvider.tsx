@@ -39,7 +39,7 @@ const ChatContext = createContext<ChatContextType | null>(null);
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const { socket } = useAuth();
+  const { socket, user } = useAuth();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -61,6 +61,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       );
       return response.data.connections;
     },
+
+    enabled: !!user,
   });
 
   const {

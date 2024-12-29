@@ -6,7 +6,7 @@ import { handleChange } from "@/lib/utils";
 import api from "@/services/axios";
 import { ApiError, LoginError, LoginProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
-import { Github, Loader2, Mail } from "lucide-react";
+import { Eye, EyeOff, Github, Loader2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorDisplay from "../error/ErrorDisplay";
@@ -18,6 +18,11 @@ export function Login() {
     loginIdentifier: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     if (loggedInUser?._id && !authLoading) {
@@ -89,20 +94,36 @@ export function Login() {
             >
               Password
             </Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="mt-1 w-full bg-gray-50 text-gray-700"
-              placeholder="••••••••"
-              disabled={isLoading}
-              value={formData.password}
-              onChange={(e) =>
-                handleChange({ e, data: formData, setData: setFormData })
-              }
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                className="pr-10 bg-white text-gray-700"
+                placeholder="••••••••"
+                disabled={isLoading}
+                value={formData.password}
+                onChange={(e) =>
+                  handleChange({ e, data: formData, setData: setFormData })
+                }
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-black hover:text-black"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-6 w-6" />
+                ) : (
+                  <Eye className="h-6 w-6" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 

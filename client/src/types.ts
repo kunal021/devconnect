@@ -64,10 +64,10 @@ export interface SignupProps {
   userName: string;
   email: string;
   password: string;
-  age: number;
-  gender: string;
-  location: string;
-  profession: string;
+  // age: number;
+  // gender: string;
+  // location: string;
+  // profession: string;
 }
 
 export interface LoginProps {
