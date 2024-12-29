@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/DBConnect.js";
 import rootRoute from "./routes/root.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
-import { object } from "zod";
+import { initIO } from "./socket.js";
 
 const port = process.env.PORT || 5000;
 
@@ -22,6 +22,9 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
+// Initialize socket.io
+initIO(io);
 
 app.use(
   cors({
@@ -46,25 +49,3 @@ connectDB()
   .catch((err) => {
     console.log(err);
   });
-
-export function getReceiverSocketId(userId) {
-  return userSocketMap[userId];
-}
-
-const userSocketMap = {};
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  const userId = socket.handshake.query.userId;
-  if (userId) {
-    userSocketMap[userId] = socket.id;
-  }
-
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
-  });
-});

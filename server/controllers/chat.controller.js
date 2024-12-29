@@ -1,5 +1,6 @@
-import { getReceiverSocketId } from "../index.js";
+import mongoose from "mongoose";
 import Message from "../schemas/message.schema.js";
+import { getIO, getReceiverSocketId } from "../socket.js";
 
 export const getMessages = async (req, res, next) => {
   try {
@@ -30,13 +31,17 @@ export const sendMessage = async (req, res, next) => {
     const { _id: loggedInUser } = req.user;
     const { text, image } = req.body;
 
-    if (!loggedInUser) {
-      throw { status: 401, message: "Unauthorized" };
+    if (!loggedInUser || !mongoose.Types.ObjectId.isValid(loggedInUser)) {
+      throw { status: 401, message: "Unauthorized or invalid sender ID" };
     }
-    if (!receiverId || !text) {
-      throw { status: 400, message: "All fields are required" };
+
+    if (!receiverId || !mongoose.Types.ObjectId.isValid(receiverId)) {
+      throw { status: 400, message: "Invalid receiver ID" };
     }
-    let imageUrl;
+
+    if (!text) {
+      throw { status: 400, message: "Message text is required" };
+    }
 
     const message = await Message.create({
       senderId: loggedInUser,
@@ -49,6 +54,7 @@ export const sendMessage = async (req, res, next) => {
       throw { status: 500, message: "Failed to send message" };
     }
 
+    const io = getIO(); // Get the socket instance
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", message);

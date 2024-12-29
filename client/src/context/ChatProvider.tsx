@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import api from "@/services/axios";
+import { User } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useEffect, useState } from "react";
 
@@ -8,20 +9,29 @@ interface Message {
   _id: string;
   senderId: string;
   receiverId: string;
-  content: string;
+  text: string;
+  image: string;
+  isRead: boolean;
   createdAt: string;
+}
+
+interface ApiResponse {
+  connections: User[];
+  success: boolean;
+  message?: string;
 }
 
 interface ChatContextType {
   messages: Message[];
-  users: string[];
-  selectedUser: string | null;
+  users: User[] | undefined;
+  getUsers: () => void;
+  selectedUser: User | null;
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
-  setSelectedUser: (user: string | null) => void;
+  setSelectedUser: (user: User | null) => void;
   sendMessage: (messageData: string) => void;
   getMessages: (userId: string) => Promise<void>;
-  handleSelectUser: (userId: string) => void;
+  handleSelectUser: (user: User) => void;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -30,22 +40,25 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const { socket } = useAuth();
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  const handleSelectUser = (userId: string) => {
-    setSelectedUser(userId);
+  const handleSelectUser = (user: User) => {
+    setSelectedUser(user);
   };
 
   const {
     data: users,
     isLoading: isUsersLoading,
-    error: userError,
-    isError: isUserError,
-  } = useQuery({
+    // error: userError,
+    // isError: isUserError,
+    refetch: refetchUsers,
+  } = useQuery<User[]>({
     queryKey: ["chatUsers"],
     queryFn: async () => {
-      const response = await api.get("/api/v1/user/all-connections");
+      const response = await api.get<ApiResponse>(
+        "/api/v1/user/all-connections"
+      );
       return response.data.connections;
     },
   });
@@ -53,8 +66,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const {
     data: messages,
     isPending: isMessagesLoading,
-    error: messageError,
-    isError: isMessageError,
+    // error: messageError,
+    // isError: isMessageError,
     refetch: refetchMessages,
   } = useQuery({
     queryKey: ["chatMessages", currentUserId], // Dynamically include userId in queryKey
@@ -72,9 +85,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await api.post(`/api/v1/chat/${selectedUser}`, {
-        message,
-      });
+      const response = await api.post(
+        `/api/v1/chat/send/${selectedUser?._id}`,
+        {
+          text: message,
+        }
+      );
       return response.data;
     },
     onSuccess: (message) => {
@@ -84,8 +100,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         (oldData = []) => [...oldData, message]
       );
     },
-    onError: () => {
+    onError: (error) => {
       showToast("error", "Failed to send message", "bottom-right", 2000);
+      console.error("Failed to send message:", error);
     },
   });
 
@@ -108,23 +125,26 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [selectedUser, socket, currentUserId, queryClient]);
 
-  useEffect(() => {
-    if (isUserError || userError) {
-      showToast("error", "Error fetching users", "bottom-right", 2000);
-    }
-  }, [isUserError, userError]);
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   if (isUserError || userError) {
+  //     showToast("error", "Error fetching users", "bottom-right", 2000);
+  //   }
+  // }, [isUserError, showToast, socket, userError]);
 
-  useEffect(() => {
-    if (isMessageError || messageError) {
-      showToast("error", "Error fetching messages", "bottom-right", 2000);
-    }
-  }, [isMessageError, messageError]);
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   if (isMessageError || messageError) {
+  //     showToast("error", "Error fetching messages", "bottom-right", 2000);
+  //   }
+  // }, [isMessageError, messageError, showToast, socket]);
 
   return (
     <ChatContext.Provider
       value={{
         messages,
         users,
+        getUsers: refetchUsers,
         selectedUser,
         isUsersLoading,
         isMessagesLoading,

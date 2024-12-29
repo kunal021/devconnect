@@ -29,7 +29,7 @@ export interface PostError {
 }
 
 export interface User {
-  _id?: string;
+  _id: string;
   firstName: string;
   lastName?: string;
   userName: string;
