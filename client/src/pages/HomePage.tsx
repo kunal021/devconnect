@@ -14,7 +14,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="container mx-auto py-16">
+    <div className="container mx-auto py-4">
       <StatusHandler
         isPending={isPending}
         isError={isError}

@@ -10,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -20,7 +19,6 @@ import {
   MessageCircleMore,
   UserPlus,
 } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 // This is sample data.
 const data = {
@@ -79,7 +77,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
               </a>
             </SidebarMenuButton>
-            {useIsMobile() && <SidebarTrigger />}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

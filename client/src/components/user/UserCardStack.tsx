@@ -52,41 +52,20 @@ export default function UserCardStack({ data }: { data: User[] }) {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-sm">
-      <AnimatePresence>
-        {data &&
-          data
-            .slice(currentIndex, currentIndex + 3)
-            .map((user: User, index: number) => (
+    <div className="w-full max-w-4xl mx-auto">
+      <motion.div className="space-y-6" layout>
+        <AnimatePresence>
+          {data &&
+            data?.map((user) => (
               <motion.div
-                key={user._id || index}
-                className="absolute left-0 right-0 w-full"
-                initial={{
-                  scale: 1 - index * 0.05,
-                  y: index * 20,
-                  opacity: 1 - index * 0.2,
-                  rotateZ: 0,
-                }}
-                animate={{
-                  scale: 1 - index * 0.05,
-                  y: index * 20,
-                  opacity: 1 - index * 0.2,
-                  rotateZ: 0,
-                }}
-                exit={{
-                  x: Math.random() > 0.5 ? -200 : 200,
-                  y: -100,
-                  opacity: 0,
-                  scale: 0.8,
-                  rotateZ: Math.random() > 0.5 ? -20 : 20,
-                }}
+                key={user._id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
                 transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 20,
-                }}
-                style={{
-                  zIndex: data.length - index,
+                  opacity: { duration: 0.3 },
+                  layout: { type: "spring", stiffness: 300, damping: 30 },
                 }}
               >
                 <UserCard
@@ -101,7 +80,8 @@ export default function UserCardStack({ data }: { data: User[] }) {
                 />
               </motion.div>
             ))}
-      </AnimatePresence>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
