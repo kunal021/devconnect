@@ -1,14 +1,13 @@
 import api from "@/services/axios";
 import UserCard from "./UserCard";
 import { User } from "@/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
 import { useToast } from "@/hooks/useToast";
 
 export default function UserCardStack({ data }: { data: User[] }) {
   const { showToast } = useToast();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -25,6 +24,8 @@ export default function UserCardStack({ data }: { data: User[] }) {
         variables.action === "interested"
           ? "You have expressed interest in the connection."
           : "You have ignored the connection.";
+
+      queryClient.invalidateQueries({ queryKey: ["userFeed"] });
 
       showToast("success", successMessage, "bottom-right", 2000);
       console.log("Success");
@@ -44,11 +45,7 @@ export default function UserCardStack({ data }: { data: User[] }) {
     action: "interested" | "ignored";
     userId: string;
   }) => {
-    if (currentIndex < data.length) {
-      mutate({ action, userId });
-      console.log(`${action} user:`, data[currentIndex]);
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-    }
+    mutate({ action, userId });
   };
 
   return (

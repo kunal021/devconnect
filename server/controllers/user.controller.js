@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import fs from "fs";
 import Connection from "../schemas/connection.schema.js";
 import User from "../schemas/user.schema.js";
+import uploadToCloudinary from "../utils/cloudinary.js";
 
 export const getUser = async (req, res, next) => {
   try {
@@ -336,6 +338,47 @@ export const getFeed = async (req, res, next) => {
     }
 
     return res.status(200).json({ success: true, data: feed });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfilePic = async (req, res, next) => {
+  try {
+    const loggedInUser = req.user;
+    const pic = req.params.pic;
+
+    const allowedPics = ["profilePic", "coverPic"];
+
+    if (!allowedPics.includes(pic)) {
+      throw { status: 400, message: "Invalid picture type" };
+    }
+
+    if (!loggedInUser || !mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
+      throw { status: 401, message: "Unauthorized" };
+    }
+
+    const profilePic = await uploadToCloudinary(req.file.path);
+
+    if (!profilePic) {
+      throw { status: 400, message: "Failed to upload profile picture" };
+    }
+
+    fs.unlinkSync(req.file.path);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      loggedInUser._id,
+      {
+        [pic]: profilePic.secure_url,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    return res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
     next(error);
   }

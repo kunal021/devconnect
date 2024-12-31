@@ -8,6 +8,7 @@ import api from "@/services/axios";
 import { useQuery } from "@tanstack/react-query";
 import BlogPostsList from "../post/GetPostList";
 import StatusHandler from "../error/SatausHandler";
+import ImageUpload from "./ImageUpload";
 
 function GetProfile({ data }: { data: User }) {
   const navigate = useNavigate();
@@ -29,13 +30,18 @@ function GetProfile({ data }: { data: User }) {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8">
-            <motion.img
-              src={data.profilePic}
-              alt={`${data.firstName} ${data.lastName}`}
-              className="w-32 h-32 rounded-full object-cover border-4 border-lime-400"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            />
+            <div className="flex-shrink-0 relative">
+              <motion.img
+                src={data.profilePic}
+                alt={`${data.firstName} ${data.lastName}`}
+                className="w-32 h-32 rounded-full object-cover border-4 border-lime-400"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              />
+              <span className="cursor-pointer absolute flex items-center justify-center right-0 bottom-0 rounded-full border-2 bg-lime-400 h-8 w-8">
+                <ImageUpload type="profilePic" />
+              </span>
+            </div>
 
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">

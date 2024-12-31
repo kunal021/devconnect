@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import authValidation from "../middlewares/authValidation.middleware.js";
 import {
   changePassword,
@@ -11,12 +12,15 @@ import {
   getFeed,
   getUser,
   getUserById,
+  updateProfilePic,
   updateUser,
 } from "../controllers/user.controller.js";
 import { updateUserSchema } from "../utils/validation.js";
 import validateSchema from "../middlewares/validateSchema.middleware.js";
 
 const router = express.Router();
+
+const upload = multer({ dest: "uploads/" });
 
 router.get("/profile", authValidation, getUser);
 router.get("/get/:userId", getUserById);
@@ -38,5 +42,11 @@ router.get(
 );
 router.get("/all-connections", authValidation, getAllConnections);
 router.get("/feed", authValidation, getFeed);
+router.post(
+  "/upload-profile-pic/:pic",
+  authValidation,
+  upload.single("profilePic"),
+  updateProfilePic
+);
 
 export default router;

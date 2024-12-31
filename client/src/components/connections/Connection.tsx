@@ -30,16 +30,7 @@ const Connection: React.FC = () => {
                 layout
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                {/* {tab === "requests" && connectionRequests.length > 0 && (
-                  <motion.span
-                    className="ml-1 sm:ml-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {connectionRequests.length}
-                  </motion.span>
-                )} */}
+
                 {activeTab === tab && (
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 xs:h-1 bg-lime-600"

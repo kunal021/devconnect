@@ -18,10 +18,6 @@ interface Connection {
   profession?: string;
 }
 
-// interface ConnectionListProps {
-//   connections: Connection[];
-// }
-
 function ConnectionList() {
   const navigate = useNavigate();
   const {
