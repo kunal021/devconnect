@@ -117,7 +117,7 @@ export function Signup() {
                 type="text"
                 autoComplete="given-name"
                 required
-                className="mt-1 w-full bg-gray-50 text-gray-700"
+                className="mt-1 bg-white text-gray-700"
                 placeholder="John"
                 disabled={isLoading}
                 value={formData.firstName}
@@ -139,7 +139,7 @@ export function Signup() {
                 type="text"
                 autoComplete="family-name"
                 required
-                className="mt-1 w-full bg-gray-50 text-gray-700"
+                className="mt-1 bg-white text-gray-700"
                 placeholder="Doe"
                 disabled={isLoading}
                 value={formData.lastName}
@@ -163,7 +163,7 @@ export function Signup() {
                 type="text"
                 autoComplete="username"
                 required
-                className="pr-10 bg-white text-gray-700"
+                className="pr-10 bg-white text-gray-700 mt-1"
                 placeholder="johndoe"
                 disabled={isLoading}
                 value={formData.userName}
@@ -200,7 +200,7 @@ export function Signup() {
               type="email"
               autoComplete="email"
               required
-              className="mt-1 w-full bg-gray-50 text-gray-700"
+              className="mt-1 bg-white text-gray-700"
               placeholder="you@example.com"
               disabled={isLoading}
               value={formData.email}
@@ -223,7 +223,7 @@ export function Signup() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                className="pr-10 bg-white text-gray-700"
+                className="pr-10 bg-white text-gray-700 mt-1"
                 placeholder="••••••••"
                 disabled={isLoading}
                 value={formData.password}

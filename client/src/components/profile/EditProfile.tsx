@@ -134,7 +134,7 @@ const EditProfile = () => {
       alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
     }
 
-    mutate(formData);
+    mutate({ ...formData, age: Number(formData.age) });
   };
 
   if (isGetUserPending) {
@@ -199,6 +199,7 @@ const EditProfile = () => {
             { id: "userName", label: "Username", type: "text" },
             { id: "age", label: "Age", type: "number" },
             { id: "location", label: "Location", type: "text" },
+            { id: "profession", label: "Profession", type: "text" },
           ].map((field) => (
             <motion.div
               key={field.id}

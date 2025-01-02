@@ -83,6 +83,7 @@ export const updateUserSchema = zod.object({
     .array(zod.string())
     .max(10, "Skills must be less than 10")
     .optional(),
+  profession: zod.string().optional(),
 });
 
 export const postSchema = zod.object({

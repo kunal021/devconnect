@@ -71,6 +71,7 @@ export const updateUser = async (req, res, next) => {
       location,
       bio,
       skills,
+      profession,
     } = req.body;
 
     if (!_id) {
@@ -98,6 +99,7 @@ export const updateUser = async (req, res, next) => {
         location,
         bio,
         skills,
+        profession,
       },
       { new: true }
     );

@@ -12,12 +12,18 @@ import api from "@/services/axios";
 import { ImageUp } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 
-const uploadProfilePic = async (file: File) => {
+const uploadProfilePic = async ({
+  file,
+  type,
+}: {
+  file: File;
+  type: string;
+}) => {
   const formData = new FormData();
   formData.append("profilePic", file);
 
   const response = await api.post(
-    "/api/v1/user/upload-profile-pic/profilePic",
+    `/api/v1/user/upload-profile-pic/${type}`,
     formData,
     {
       headers: {
@@ -70,7 +76,7 @@ const ImageUpload = ({ type }: { type: string }) => {
   const handleUpload = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (file) {
-      mutate(file);
+      mutate({ file, type });
     }
   };
 

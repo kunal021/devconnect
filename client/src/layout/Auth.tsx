@@ -51,7 +51,7 @@ export default function Auth() {
         <div className="relative z-10 w-full h-full">
           <AuthImagePattern
             title="Join our community"
-            subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
+            subtitle="Connect with developers, collaborate on projects, share your ideas, and build a strong developer community."
           />
         </div>
       </motion.div>

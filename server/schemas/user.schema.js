@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema(
       type: [String],
       max: 10,
     },
-    proffession: {
+    profession: {
       type: String,
     },
   },

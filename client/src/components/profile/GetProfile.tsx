@@ -38,9 +38,11 @@ function GetProfile({ data }: { data: User }) {
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               />
-              <span className="cursor-pointer absolute flex items-center justify-center right-0 bottom-0 rounded-full border-2 bg-lime-400 h-8 w-8">
-                <ImageUpload type="profilePic" />
-              </span>
+              {user?._id === data._id && (
+                <span className="cursor-pointer absolute flex items-center justify-center right-0 bottom-0 rounded-full border-2 bg-lime-400 h-8 w-8">
+                  <ImageUpload type="profilePic" />
+                </span>
+              )}
             </div>
 
             <div className="flex-1 text-center sm:text-left">
@@ -111,6 +113,10 @@ function GetProfile({ data }: { data: User }) {
             <InfoCard
               title="Location"
               value={data.location || "Location Not Provided"}
+            />
+            <InfoCard
+              title="Profession"
+              value={data.profession || "Profession Not Provided"}
             />
             <InfoCard
               title="Skills"

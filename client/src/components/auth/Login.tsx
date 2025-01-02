@@ -78,7 +78,7 @@ export function Login() {
               type="email"
               autoComplete="loginIdentifier"
               required
-              className="mt-1 w-full bg-gray-50 text-gray-700"
+              className="mt-1 bg-white text-gray-700"
               placeholder="you@example.com"
               disabled={isLoading}
               value={formData.loginIdentifier}
@@ -101,7 +101,7 @@ export function Login() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
-                className="pr-10 bg-white text-gray-700"
+                className="pr-10 mt-1 bg-white text-gray-700"
                 placeholder="••••••••"
                 disabled={isLoading}
                 value={formData.password}

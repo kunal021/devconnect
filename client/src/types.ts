@@ -42,6 +42,7 @@ export interface User {
   profilePic?: string;
   coverPic?: string;
   skills?: string[];
+  profession?: string;
   createdAt: Date;
   updatedAt: Date;
 }
