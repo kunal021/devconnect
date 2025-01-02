@@ -2,8 +2,11 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect } from "react";
 import { MessageCircle, Terminal, Network, Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ThemeToggle } from "../extra/ThemeToggle";
+import { useTheme } from "@/hooks/useTheme";
 
 const Home = () => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const controls = useAnimation();
 
@@ -40,9 +43,16 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 overflow-hidden bg-black">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 overflow-hidden bg-white dark:bg-black">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
       <div className="w-full min-h-screen flex items-center justify-center">
-        <div className="back flex flex-col justify-center items-center">
+        <div
+          className={`${
+            theme === "dark" ? "darkback" : "lightback"
+          } flex flex-col justify-center items-center`}
+        >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={controls}
@@ -56,7 +66,7 @@ const Home = () => {
             >
               <Terminal className="text-lime-600 mr-4" size={48} />
               <motion.h1
-                className="text-5xl md:text-8xl font-bold text-white"
+                className="text-5xl md:text-8xl font-bold text-black dark:text-white"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
@@ -105,7 +115,7 @@ const Home = () => {
       >
         <motion.div className="flex flex-col items-center justify-center">
           <motion.p
-            className="text-2xl md:text-5xl font-bold mb-8 text-white"
+            className="text-2xl md:text-5xl font-bold mb-8 text-black dark:text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
@@ -148,7 +158,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-2xl md:text-5xl font-bold mb-6 text-white"
+            className="text-2xl md:text-5xl font-bold mb-6 text-black dark:text-white"
           >
             Why Choose Dev<span className="text-lime-500">Connect</span>
           </motion.h2>
@@ -157,7 +167,7 @@ const Home = () => {
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              className="bg-gray-900 p-6 rounded-lg shadow-lg border-t-4 border-lime-500"
+              className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-lg border-t-4 border-lime-500"
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 10px 35px rgba(0,0,0,0.1)",
