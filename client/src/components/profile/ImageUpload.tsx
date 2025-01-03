@@ -11,6 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/axios";
 import { ImageUp } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/hooks/useAuth";
+import Cookies from "js-cookie";
 
 const uploadProfilePic = async ({
   file,
@@ -37,6 +39,7 @@ const uploadProfilePic = async ({
 
 const ImageUpload = ({ type }: { type: string }) => {
   const { showToast } = useToast();
+  const { setUser } = useAuth();
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -45,7 +48,9 @@ const ImageUpload = ({ type }: { type: string }) => {
   const mutation = useMutation({
     mutationFn: uploadProfilePic,
     onSuccess: (data) => {
-      console.log("Upload Successful:", data);
+      setUser(data.user);
+      Cookies.set("user", JSON.stringify(data.user));
+      console.log("Upload Successful");
       queryClient.invalidateQueries({ queryKey: ["userData"] });
       showToast(
         "success",

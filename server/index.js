@@ -4,6 +4,7 @@ import express from "express";
 import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
+import passport from "passport";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/DBConnect.js";
@@ -35,6 +36,7 @@ app.use(
 
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(passport.initialize());
 
 app.use("/api/v1", rootRoute);
 app.use(errorHandler);

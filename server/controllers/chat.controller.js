@@ -65,3 +65,25 @@ export const sendMessage = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteMessage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      throw { status: 400, message: "Invalid message ID" };
+    }
+
+    const message = await Message.findByIdAndDelete(id);
+
+    if (!message) {
+      throw { status: 404, message: "Message not found" };
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Message deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -135,40 +135,10 @@ export const logout = async (req, res, next) => {
   }
 };
 
-// export const googleSignin = async (req, res) => {
-//   const { token } = req.body;
-//   try {
-//     const decodedToken = await admin.auth().verifyIdToken(token);
-//     const { uid, email, name, picture } = decodedToken;
-
-//     let user = await User.findOne({ firebaseUid: uid });
-
-//     if (!user) {
-//       user = await User.create({
-//         firebaseUid: uid,
-//         email,
-//         userName: `${name}${Math.floor(Math.random() * 10000)}`,
-//         profilePic: picture,
-//         provider: decodedToken.firebase.sign_in_provider,
-//       });
-//     }
-//     const token = user.createToken();
-
-//     res.cookie("token", token, {
-//       httpOnly: true,
-//     });
-//     res.status(200).json({ message: "User authenticated" });
-//   } catch (error) {
-//     res.status(401).json({ message: "Invalid token", error: error.message });
-//   }
-// };
-
 export const refreshAccessToken = async (req, res, next) => {
   try {
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
-
-    // console.log(incomingRefreshToken);
 
     if (!incomingRefreshToken) {
       throw { status: 401, message: "Invalid refresh token" };
@@ -210,51 +180,56 @@ export const refreshAccessToken = async (req, res, next) => {
   }
 };
 
-export const googleSignin = async (req, res) => {
-  passport.authenticate("google", { scope: ["profile", "email"] });
-};
+export const googleSignin = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
 
-export const googleCallback = async (req, res) => {
-  passport.authenticate("google", { session: false }, async (req, res) => {
-    try {
-      const {
-        profile,
-        accessToken: googleAccessToken,
-        refreshToken: googleRefreshToken,
-      } = req.user;
-      let user = await User.findOne({
-        email: profile.emails[0].value,
-      });
-      if (!user) {
-        user = new User({
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
-          userName: profile.displayName,
+export const googleCallback = (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { session: false },
+    async (err, user, info) => {
+      try {
+        if (err) {
+          throw { status: 401, message: "Unauthorized" };
+        }
+
+        const {
+          profile,
+          accessToken: googleAccessToken,
+          refreshToken: googleRefreshToken,
+        } = user;
+
+        let dbUser = await User.findOne({
           email: profile.emails[0].value,
-          providerId: profile.id,
         });
+
+        if (!dbUser) {
+          dbUser = await User.create({
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
+            userName: profile.emails[0].value,
+            email: profile.emails[0].value,
+            providerId: profile.id,
+            profilePic: profile.photos[0].value,
+          });
+        }
+
+        const loggedInUser = await User.findById(dbUser._id).select(
+          "-password -refreshToken -__v"
+        );
+
+        const { accessToken, refreshToken } =
+          await generateAccessAndRefreshToken(dbUser._id);
+
+        return res
+          .status(200)
+          .cookie("refreshToken", refreshToken, cookieOptions)
+          .cookie("accessToken", accessToken, cookieOptions)
+          .redirect(process.env.GOOGLE_REDIRECT_URL);
+      } catch (error) {
+        next(error);
       }
-
-      const loogedInUser = await User.findById(user._id).select(
-        "-password -refreshToken -__v"
-      );
-
-      const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-        user._id
-      );
-
-      return res
-        .status(200)
-        .cookie("refreshToken", refreshToken, cookieOptions)
-        .cookie("accessToken", accessToken, cookieOptions)
-        .json({
-          message: "User authenticated successfully",
-          user: loogedInUser,
-          accessToken,
-          refreshToken,
-        });
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
     }
-  });
+  )(req, res, next);
 };

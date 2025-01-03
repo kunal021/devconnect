@@ -11,7 +11,11 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     (accessToken, refreshToken, profile, done) => {
-      return done(null, { profile, accessToken, refreshToken });
+      try {
+        return done(null, { profile, accessToken, refreshToken });
+      } catch (error) {
+        return done(error, null);
+      }
     }
   )
 );

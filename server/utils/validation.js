@@ -75,7 +75,7 @@ export const updateUserSchema = zod.object({
     .string({ required_error: "User Name is required" })
     .min(3, "User Name must be atleast 3 characters")
     .max(56, "User Name must be less than 56 characters"),
-  age: zod.number().optional(),
+  age: zod.number().nullable().optional(),
   gender: zod.string().optional(),
   location: zod.string().optional(),
   bio: zod.string().max(250, "Bio must be less than 250 characters").optional(),

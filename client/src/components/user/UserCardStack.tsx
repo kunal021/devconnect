@@ -20,12 +20,11 @@ export default function UserCardStack({ data }: { data: User[] }) {
       return await api.post(`/api/v1/connection/send/${action}/${userId}`);
     },
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["userFeed"] });
       const successMessage =
         variables.action === "interested"
           ? "You have expressed interest in the connection."
           : "You have ignored the connection.";
-
-      queryClient.invalidateQueries({ queryKey: ["userFeed"] });
 
       showToast("success", successMessage, "bottom-right", 2000);
       console.log("Success");

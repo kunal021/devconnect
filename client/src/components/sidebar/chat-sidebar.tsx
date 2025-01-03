@@ -22,8 +22,6 @@ const ChatSidebar = () => {
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
-  console.log(filteredUsers);
-
   return (
     <aside className="h-full w-full md:w-64 lg:w-72 border-r border-base-300 flex flex-col shrink-0">
       <div className="border-b border-base-300 w-full p-5">

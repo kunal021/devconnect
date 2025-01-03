@@ -29,7 +29,6 @@ function ConnectionList() {
     queryKey: ["connections"],
     queryFn: async () => {
       const response = await api.get("/api/v1/user/all-connections");
-
       return response.data.connections;
     },
   });

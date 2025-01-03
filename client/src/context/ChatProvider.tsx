@@ -30,6 +30,7 @@ interface ChatContextType {
   isMessagesLoading: boolean;
   setSelectedUser: (user: User | null) => void;
   sendMessage: (messageData: string) => void;
+  deleteMessage: (messageId: string) => void;
   getMessages: (userId: string) => Promise<void>;
   handleSelectUser: (user: User) => void;
 }
@@ -78,6 +79,28 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       return response.data.data;
     },
     enabled: !!currentUserId,
+  });
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      await api.delete(`/api/v1/chat/delete/${messageId}`);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", currentUserId],
+      });
+      showToast(
+        "success",
+        "Message deleted successfully",
+        "bottom-right",
+        2000
+      );
+    },
+    onError: (error) => {
+      showToast("error", "Failed to delete message", "bottom-right", 2000);
+      console.error("Failed to delete message:", error);
+    },
   });
 
   const getMessages = async (userId: string) => {
@@ -152,6 +175,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         isMessagesLoading,
         setSelectedUser,
         sendMessage: sendMessageMutation.mutate,
+        deleteMessage: deleteMessageMutation.mutate,
         getMessages,
         handleSelectUser,
       }}

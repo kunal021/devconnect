@@ -54,9 +54,10 @@ export interface UpdateUser {
   age?: number;
   gender?: string;
   location?: string;
+  profession?: string;
   bio?: string;
   profilePic?: string;
-  skills?: string[];
+  skills: string[];
 }
 
 export interface SignupProps {

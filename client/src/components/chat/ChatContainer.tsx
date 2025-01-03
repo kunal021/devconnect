@@ -6,9 +6,16 @@ import { useAuth } from "@/hooks/useAuth";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "../skeletons/MessageSkeleton";
 import { formatMessageTime } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } = useChat();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    deleteMessage,
+  } = useChat();
   const { user: authUser } = useAuth();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,6 +30,10 @@ const ChatContainer = () => {
       messageEndRef?.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  const handleDeleteMessage = async (messageId: string) => {
+    await deleteMessage(messageId);
+  };
 
   if (isMessagesLoading) {
     return (
@@ -78,7 +89,7 @@ const ChatContainer = () => {
 
               {/* Message Bubble */}
               <div
-                className={`rounded-2xl px-4 py-2 max-w-xs sm:max-w-md break-words ${
+                className={`relative rounded-2xl px-4 py-2 max-w-xs sm:max-w-md break-words ${
                   message.senderId === authUser?._id
                     ? "bg-lime-500 text-white rounded-tr-none"
                     : "bg-gray-700 text-white rounded-tl-none"
@@ -92,6 +103,14 @@ const ChatContainer = () => {
                   />
                 )}
                 {message.text && <p>{message.text}</p>}
+                {message.senderId === authUser?._id && (
+                  <div
+                    onClick={() => handleDeleteMessage(message._id)}
+                    className="absolute -left-5 top-2.5 cursor-pointer"
+                  >
+                    <Trash2 className="h-5 w-5 text-red-500" />
+                  </div>
+                )}
               </div>
             </div>
           </div>

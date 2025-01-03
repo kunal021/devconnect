@@ -16,6 +16,7 @@ import PostPage from "./pages/PostPage";
 import GetPost from "./components/post/GetPost";
 import ChatPage from "./pages/ChatPage";
 import AppProviders from "./context/AppProviders";
+import GoogleCallback from "./components/auth/GoogelCallback";
 
 function App() {
   const router = createBrowserRouter([
@@ -35,6 +36,14 @@ function App() {
           element: (
             <PublicRoute>
               <Auth />
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "/google/callback",
+          element: (
+            <PublicRoute>
+              <GoogleCallback />
             </PublicRoute>
           ),
         },

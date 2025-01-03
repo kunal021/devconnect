@@ -6,11 +6,12 @@ import { handleChange } from "@/lib/utils";
 import api from "@/services/axios";
 import { ApiError, SignupError, SignupProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff, Github, Loader2, Mail, UserSearch } from "lucide-react";
+import { Eye, EyeOff, Loader2, UserSearch } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorDisplay from "../error/ErrorDisplay";
 import { useToast } from "@/hooks/useToast";
+import GoogleAuth from "./GoogleAuth";
 
 export function Signup() {
   const { user: loggedInUser, loading: authLoading } = useAuth();
@@ -382,20 +383,14 @@ export function Signup() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <Button
-            variant="outline"
-            className="w-full transition duration-300 ease-in-out"
-            disabled={isLoading}
-          >
-            <Mail className="mr-2 h-4 w-4" /> Google
-          </Button>
-          <Button
+          <GoogleAuth isLoading={isLoading} />
+          {/* <Button
             variant="outline"
             className="w-full transition duration-300 ease-in-out"
             disabled={isLoading}
           >
             <Github className="mr-2 h-4 w-4" /> GitHub
-          </Button>
+          </Button> */}
         </div>
       </div>
 

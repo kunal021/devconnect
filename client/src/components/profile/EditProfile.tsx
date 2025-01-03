@@ -19,6 +19,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/services/axios";
 import { Loader2 } from "lucide-react";
 import ErrorDisplay from "../error/ErrorDisplay";
+import { useAuth } from "@/hooks/useAuth";
+import Cookies from "js-cookie";
+import { useToast } from "@/hooks/useToast";
 
 const inputVariants = {
   focus: {
@@ -50,6 +53,8 @@ const requiredFields = ["firstName", "userName"];
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
+  const { showToast } = useToast();
   const location = useLocation();
   const { userId } = location.state;
 
@@ -73,6 +78,7 @@ const EditProfile = () => {
     userName: "",
     age: undefined,
     bio: "",
+    profession: "",
     skills: [],
     location: "",
     gender: "",
@@ -86,12 +92,47 @@ const EditProfile = () => {
         userName: getUserData.userName,
         age: getUserData?.age || undefined,
         bio: getUserData.bio,
+        profession: getUserData?.profession || "",
         skills: getUserData?.skills || [],
         location: getUserData.location || "",
         gender: getUserData?.gender || "",
       });
     }
   }, [getUserData]);
+
+  const handleAddSkills = (
+    e: React.KeyboardEvent<HTMLInputElement>
+    // value: string;
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const skillInput = e.target as HTMLInputElement;
+      const skillValue = skillInput.value.trim();
+
+      if (skillValue) {
+        if (skillValue.length > 50) {
+          showToast("error", "Skill is too long", "bottom-right", 2000);
+        }
+      }
+
+      if (skillValue && !formData.skills.includes(skillValue)) {
+        setFormData((prevData) => ({
+          ...prevData,
+          skills: [...prevData.skills, skillValue],
+        }));
+        skillInput.value = "";
+      } else {
+        showToast("error", "Skill already exists", "bottom-right", 2000);
+      }
+    }
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      skills: prevData.skills.filter((s) => s !== skill),
+    }));
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -107,7 +148,9 @@ const EditProfile = () => {
     mutationFn: (data: UpdateUser) => {
       return api.patch(`/api/v1/user/update`, data);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setUser(data.data.updatedUser);
+      Cookies.set("user", JSON.stringify(data.data.updatedUser));
       navigate("/profile");
       console.log("Success Updating User");
     },
@@ -321,12 +364,34 @@ const EditProfile = () => {
             >
               <Input
                 id="skills"
-                placeholder="Skills (comma separated)"
+                onKeyDown={(e) => handleAddSkills(e)}
+                placeholder="Skills (Click Enter to add)"
                 className="w-full bg-transparent border-none text-gray-800 dark:text-white text-lg font-semibold focus:ring-0 focus:outline-none p-0 focus:shadow-none placeholder-gray-400 dark:placeholder-gray-600"
                 onFocus={() => setFocusedField("skills")}
                 onBlur={() => setFocusedField(null)}
               />
             </motion.div>
+
+            {formData.skills.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-900 p-2 rounded-lg">
+                {formData.skills.map((skill, index) => (
+                  <div
+                    key={skill + index}
+                    className="flex justify-between items-center gap-2 p-2 bg-gray-200 dark:bg-gray-950 rounded"
+                  >
+                    <p className="text-gray-800 dark:text-white font-semibold ">
+                      {skill}
+                    </p>
+                    <p
+                      onClick={() => handleRemoveSkill(skill)}
+                      className="text-red-500 cursor-pointer"
+                    >
+                      X
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           <div className="flex justify-between items-center w-full gap-5">

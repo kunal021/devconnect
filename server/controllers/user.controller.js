@@ -88,7 +88,7 @@ export const updateUser = async (req, res, next) => {
       throw { status: 401, message: "Unauthorized" };
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       _id,
       {
         firstName,
@@ -104,10 +104,14 @@ export const updateUser = async (req, res, next) => {
       { new: true }
     );
 
+    const loogedInUser = await User.findById(user._id).select(
+      "-password -refreshToken -__v"
+    );
+
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      updatedUser,
+      updatedUser: loogedInUser,
     });
   } catch (error) {
     next(error);
@@ -347,7 +351,7 @@ export const getFeed = async (req, res, next) => {
 
 export const updateProfilePic = async (req, res, next) => {
   try {
-    const loggedInUser = req.user;
+    const { _id } = req.user;
     const pic = req.params.pic;
 
     const allowedPics = ["profilePic", "coverPic"];
@@ -356,7 +360,7 @@ export const updateProfilePic = async (req, res, next) => {
       throw { status: 400, message: "Invalid picture type" };
     }
 
-    if (!loggedInUser || !mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
       throw { status: 401, message: "Unauthorized" };
     }
 
@@ -368,19 +372,23 @@ export const updateProfilePic = async (req, res, next) => {
 
     fs.unlinkSync(req.file.path);
 
-    const updatedUser = await User.findByIdAndUpdate(
-      loggedInUser._id,
+    await User.findByIdAndUpdate(
+      _id,
       {
         [pic]: profilePic.secure_url,
       },
       { new: true }
     );
 
-    if (!updatedUser) {
+    const loogedInUser = await User.findById(_id).select(
+      "-password -refreshToken -__v"
+    );
+
+    if (!loogedInUser) {
       throw { status: 404, message: "User not found" };
     }
 
-    return res.status(200).json({ success: true, user: updatedUser });
+    return res.status(200).json({ success: true, user: loogedInUser });
   } catch (error) {
     next(error);
   }

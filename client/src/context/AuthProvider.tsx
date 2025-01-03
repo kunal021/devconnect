@@ -10,6 +10,7 @@ interface LoginType {
 
 interface AuthContextType {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   loading: boolean;
   error: string | null;
   login: (params: LoginType) => void;
@@ -119,6 +120,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         error,
         login,
