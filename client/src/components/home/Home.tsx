@@ -43,11 +43,15 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 overflow-hidden bg-white dark:bg-black">
-      <div className="absolute top-6 right-6">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 overflow-hidden bg-white dark:bg-black">
+      <div className="fixed top-6 right-6 z-30">
         <ThemeToggle />
       </div>
-      <div className="w-full min-h-screen flex items-center justify-center">
+
+      <div className="fixed -top-24 -right-24 w-[28rem] h-[28rem] bg-lime-500/30 rounded-full blur-3xl" />
+      <div className="fixed top-24 -right-24 w-72 h-72 bg-lime-200/50 rounded-full blur-3xl" />
+
+      <div className="relative w-full min-h-screen flex items-center justify-center z-20">
         <div
           className={`${
             theme === "dark" ? "darkback" : "lightback"
@@ -108,7 +112,7 @@ const Home = () => {
         </div>
       </div>
       <motion.div
-        className="mt-16 w-full max-w-5xl"
+        className="mt-16 w-full max-w-5xl z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
@@ -126,7 +130,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-lg md:text-2xl text-center font-bold mb-8 text-lime-500"
+            className="text-2lg md:text-4xl text-center font-bold mb-8 text-lime-500"
           >
             Connect with developers, collaborate on projects, share your ideas,
             and build a strong developer community.
@@ -137,13 +141,14 @@ const Home = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Join DevConnect Now
+            Join <span className="text-black">Dev</span>
+            <span className="text-lime-500">Connect</span> Now
           </motion.button>
         </motion.div>
       </motion.div>
 
       <motion.div
-        className="mt-20 flex flex-col items-center justify-center max-w-3xl"
+        className="mt-20 flex flex-col items-center justify-center max-w-3xl z-20"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
@@ -190,7 +195,7 @@ const Home = () => {
       </motion.div>
 
       <motion.footer
-        className="mt-16 text-center text-lime-700"
+        className="mt-16 text-center text-lime-700 z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.8 }}
