@@ -3,16 +3,16 @@ import zod from "zod";
 export const signupSchema = zod.object({
   firstName: zod
     .string({ required_error: "First Name is required" })
-    .min(3, "First Name must be atleast 3 characters")
+    .min(1, "First Name must be atleast 3 characters")
     .max(56, "First Name must be less than 56 characters"),
   lastName: zod
     .string()
-    .min(3, "Last Name must be atleast 3 characters")
+    .min(1, "Last Name must be atleast 3 characters")
     .max(56, "Last Name must be less than 56 characters")
     .optional(),
   userName: zod
     .string({ required_error: "User Name is required" })
-    .min(3, "User Name must be atleast 3 characters")
+    .min(2, "User Name must be atleast 3 characters")
     .max(56, "User Name must be less than 56 characters"),
   email: zod
     .string({ required_error: "Email is required" })
@@ -64,16 +64,16 @@ export const loginSchema = zod.object({
 export const updateUserSchema = zod.object({
   firstName: zod
     .string({ required_error: "First Name is required" })
-    .min(3, "First Name must be atleast 3 characters")
+    .min(1, "First Name must be atleast 3 characters")
     .max(56, "First Name must be less than 56 characters"),
   lastName: zod
     .string()
-    .min(3, "Last Name must be atleast 3 characters")
+    .min(1, "Last Name must be atleast 3 characters")
     .max(56, "Last Name must be less than 56 characters")
     .optional(),
   userName: zod
     .string({ required_error: "User Name is required" })
-    .min(3, "User Name must be atleast 3 characters")
+    .min(2, "User Name must be atleast 3 characters")
     .max(56, "User Name must be less than 56 characters"),
   age: zod.number().nullable().optional(),
   gender: zod.string().optional(),

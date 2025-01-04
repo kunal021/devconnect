@@ -150,7 +150,9 @@ function ChangePassword() {
                 <div className="flex justify-center items-center">
                   {isError && <ErrorDisplay error={error} isError={isError} />}
                   {isSuccess && (
-                    <p style={{ color: "green" }}>Login successful!</p>
+                    <p style={{ color: "green" }}>
+                      Password change successful!
+                    </p>
                   )}
                 </div>
 

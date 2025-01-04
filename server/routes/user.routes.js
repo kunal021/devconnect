@@ -3,6 +3,7 @@ import multer from "multer";
 import authValidation from "../middlewares/authValidation.middleware.js";
 import {
   changePassword,
+  changeUserName,
   checkUserExists,
   checkUserNameExists,
   deleteUser,
@@ -33,6 +34,7 @@ router.patch(
 );
 router.delete("/delete", authValidation, deleteUser);
 router.post("/username-exists", authValidation, checkUserNameExists);
+router.patch("/username-change", authValidation, changeUserName);
 router.post("/user-exists", authValidation, checkUserExists);
 router.patch("/change-password", authValidation, changePassword);
 router.get(

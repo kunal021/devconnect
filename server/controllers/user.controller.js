@@ -3,6 +3,7 @@ import fs from "fs";
 import Connection from "../schemas/connection.schema.js";
 import User from "../schemas/user.schema.js";
 import uploadToCloudinary from "../utils/cloudinary.js";
+import Message from "../schemas/message.schema.js";
 
 export const getUser = async (req, res, next) => {
   try {
@@ -104,14 +105,14 @@ export const updateUser = async (req, res, next) => {
       { new: true }
     );
 
-    const loogedInUser = await User.findById(user._id).select(
+    const loggedInUser = await User.findById(user._id).select(
       "-password -refreshToken -__v"
     );
 
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      updatedUser: loogedInUser,
+      updatedUser: loggedInUser,
     });
   } catch (error) {
     next(error);
@@ -137,6 +138,12 @@ export const deleteUser = async (req, res, next) => {
     }
 
     await User.findByIdAndDelete(_id);
+
+    await Connection.deleteMany({ userId: _id });
+
+    await Connection.deleteMany({ connectionId: _id });
+
+    await Message.deleteMany({ senderId: _id });
 
     return res
       .status(200)
@@ -380,15 +387,54 @@ export const updateProfilePic = async (req, res, next) => {
       { new: true }
     );
 
-    const loogedInUser = await User.findById(_id).select(
+    const loggedInUser = await User.findById(_id).select(
       "-password -refreshToken -__v"
     );
 
-    if (!loogedInUser) {
+    if (!loggedInUser) {
       throw { status: 404, message: "User not found" };
     }
 
-    return res.status(200).json({ success: true, user: loogedInUser });
+    return res.status(200).json({ success: true, user: loggedInUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changeUserName = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const { userName } = req.body;
+
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+      throw { status: 401, message: "Unauthorized" };
+    }
+
+    if (!userName) {
+      throw { status: 400, message: "UserName is required" };
+    }
+
+    const user = await User.findByIdAndUpdate(
+      _id,
+      {
+        userName,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    const loggedInUser = await User.findById(_id).select(
+      "-password -refreshToken -__v"
+    );
+
+    if (!loggedInUser) {
+      throw { status: 404, message: "User not found" };
+    }
+
+    return res.status(200).json({ success: true, user: loggedInUser });
   } catch (error) {
     next(error);
   }
