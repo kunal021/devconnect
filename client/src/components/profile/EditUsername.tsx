@@ -11,7 +11,7 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/axios";
 import { ApiError, PasswordUpdateError, SignupError } from "@/types";
 import { Loader2, Pencil, UserSearch } from "lucide-react";
@@ -46,6 +46,7 @@ const inputVariants = {
 
 function EditUsername() {
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState("");
 
@@ -54,6 +55,7 @@ function EditUsername() {
       return await api.patch("/api/v1/user/username-change", data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userData"] });
       setIsOpen(false);
       console.log("Success Updating Password");
     },

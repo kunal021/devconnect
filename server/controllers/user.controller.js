@@ -228,7 +228,7 @@ export const changePassword = async (req, res, next) => {
 export const getAllConnectionRequests = async (req, res, next) => {
   try {
     const loggedInUser = req.user;
-    if (!loggedInUser) {
+    if (!loggedInUser || !mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
       throw { status: 401, message: "Unauthorized" };
     }
 
@@ -260,7 +260,7 @@ export const getAllConnectionRequests = async (req, res, next) => {
 export const getAllConnections = async (req, res, next) => {
   try {
     const loggedInUser = req.user;
-    if (!loggedInUser) {
+    if (!loggedInUser || !mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
       throw { status: 401, message: "Unauthorized" };
     }
 
@@ -299,13 +299,15 @@ export const getAllConnections = async (req, res, next) => {
       throw { status: 404, message: "No connections found" };
     }
 
-    const data = connections.map((connection) => {
-      if (connection.sender._id.toString() === loggedInUser._id.toString()) {
-        return connection.receiver;
-      } else {
-        return connection.sender;
-      }
-    });
+    const data = connections
+      .filter((connection) => connection.sender && connection.receiver)
+      .map((connection) => {
+        if (connection.sender._id.toString() === loggedInUser._id.toString()) {
+          return connection.receiver;
+        } else {
+          return connection.sender;
+        }
+      });
 
     return res.status(200).json({ success: true, connections: data });
   } catch (error) {

@@ -21,6 +21,12 @@ export default function UserCardStack({ data }: { data: User[] }) {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["userFeed"] });
+      queryClient.setQueryData(["userFeed"], (oldData: User[]) => {
+        if (!oldData) {
+          return oldData;
+        }
+        return oldData.filter((user: User) => user._id !== variables.userId);
+      });
       const successMessage =
         variables.action === "interested"
           ? "You have expressed interest in the connection."

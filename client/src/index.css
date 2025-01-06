@@ -119,9 +119,8 @@ body::-webkit-scrollbar-thumb {
   inset: 0;
   height: 100%;
   width: 80%;
-  background-image: linear-gradient(to right,
-      #262626 1px, transparent 1px), linear-gradient(to bottom,
-      #262626 1px, transparent 1px);
+  background-image: linear-gradient(to right, #262626 1px, transparent 1px),
+    linear-gradient(to bottom, #262626 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: -1px -1px;
 }
@@ -130,18 +129,16 @@ body::-webkit-scrollbar-thumb {
   inset: 0;
   height: 100%;
   width: 80%;
-  background-image: linear-gradient(to right,
-      #e5e5e5 1px, transparent 1px), linear-gradient(to bottom,
-      #e5e5e5 1px, transparent 1px);
+  background-image: linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+    linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: -1px -1px;
 }
 
 @media (max-width: 768px) {
-
   .darkback,
   .lightback {
     height: 0;
-    width: 0
+    width: 0;
   }
 }
