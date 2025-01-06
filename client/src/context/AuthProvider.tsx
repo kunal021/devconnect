@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = ({ user }: LoginType) => {
     setUser(user);
-    Cookies.set("user", JSON.stringify(user));
+    Cookies.set("user", JSON.stringify(user), { expires: 15 });
     // connectSocket();
   };
 

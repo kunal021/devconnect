@@ -49,7 +49,7 @@ const ImageUpload = ({ type }: { type: string }) => {
     mutationFn: uploadProfilePic,
     onSuccess: (data) => {
       setUser(data.user);
-      Cookies.set("user", JSON.stringify(data.user));
+      Cookies.set("user", JSON.stringify(data.user), { expires: 15 });
       console.log("Upload Successful");
       queryClient.invalidateQueries({ queryKey: ["userData"] });
       showToast(

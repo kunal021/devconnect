@@ -150,7 +150,9 @@ const EditProfile = () => {
     },
     onSuccess: (data) => {
       setUser(data.data.updatedUser);
-      Cookies.set("user", JSON.stringify(data.data.updatedUser));
+      Cookies.set("user", JSON.stringify(data.data.updatedUser), {
+        expires: 15,
+      });
       navigate("/profile");
       console.log("Success Updating User");
     },
